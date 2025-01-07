@@ -1,373 +1,269 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { AuthContext } from '../providers/AuthProvider';
-import { showMessage, hideMessage } from "react-native-flash-message";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    Linking,
+    TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { AuthContext } from "../providers/AuthProvider";
+import { showMessage } from "react-native-flash-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "../instance/axios-instance";
-import { Colors } from '../constants';
-import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert';
+import { SCLAlert, SCLAlertButton } from "react-native-scl-alert";
 
 const PendingScreen = ({ navigation }) => {
-
-
-
-    const [pendingorders, setPendingorders] = useState([]);
-    const [alertshow, setAlertshow] = useState(false);
-    const [orderobject, setOrderobject] = useState([]);
+    const [state, setState] = useState({
+        pendingOrders: [],
+        alertShow: false,
+        orderObject: [],
+    });
 
     const { setSpinner, checkLoggin, setPendingcount } = useContext(AuthContext);
 
-
     const setStatus = async (order) => {
+        console.log("checking order", order);
+        try {
+            setState((prev) => ({ ...prev, alertShow: false }));
+            setSpinner(true);
 
-        setAlertshow(false);
-        setSpinner(true);
-        const token = await AsyncStorage.getItem('userSession');
-        const user_id = await AsyncStorage.getItem('userId');
+            const token = await AsyncStorage.getItem("userSession");
+            console.log("token", token);
+            const userId = await AsyncStorage.getItem("userId");
 
-        const statuscontroller = new AbortController();
-
-        await axios.get('/accept_delivery/' + order + '/' + user_id, { signal: statuscontroller.signal }, {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-            .then(function (response) {
-
-                setPendingorders(response.data);
-                setPendingcount(response.data.length);
-                setSpinner(false);
-                showMessage({
-
-                    message: "",
-                    description: 'Order has been moved to Ongoing Tab',
-                    type: 'success',
-                    textStyle: { fontSize: 16, padding: 10 },
-
-                });
-
-
-            })
-            .catch(function (error) {
-
-                setSpinner(false);
-
+            const response = await axios.put(`driver/update_out_for_delivery/${order}`, {
+                headers: { Authorization: `Bearer ${token}` },
             });
 
-        statuscontroller.abort()
+            console.log("response", response);
 
-    }
+            // setState((prev) => ({ ...prev, pendingOrders: response.data.result }));
+            // setPendingcount(response.data.result.length);
+            setSpinner(false);
+            if (response.data.success) {
+                alert("Order has been moved to Ongoing Tab");
+                getPendingOrders();
+            }
+            // showMessage({
+            //     message: "",
+            //     description: "Order has been moved to Ongoing Tab",
+            //     type: "success",
+            //     textStyle: { fontSize: 16, padding: 10 },
+            // });
 
-    const setDeliveryStatus = async (order) => {
+        } catch (error) {
+            setSpinner(false);
+            console.error("Error setting status:", error);
+        }
+    };
 
-        setOrderobject(order);
-        setAlertshow(true);
+    const setDeliveryStatus = (order) => {
+        setState((prev) => ({
+            ...prev,
+            orderObject: order,
+            alertShow: true,
+        }));
+    };
 
-    }
+    const handleStatusClose = () => {
+        setState((prev) => ({ ...prev, alertShow: false }));
+    };
 
-    const handleStatusClose = async () => {
-        setAlertshow(false);
-    }
+    const getPendingOrders = async () => {
+        try {
+            setSpinner(true);
+            const token = await AsyncStorage.getItem("userSession");
+            const userId = await AsyncStorage.getItem("userId");
+
+            const response = await axios.get(`driver/get_pending_orders`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("response pending", response.data.result);
+
+            setState((prev) => ({ ...prev, pendingOrders: response.data.result }));
+            setPendingcount(response?.data.result.length);
+            setSpinner(false);
+        } catch (error) {
+            setSpinner(false);
+            console.error("Error fetching pending orders:", error);
+        }
+    };
 
     useEffect(() => {
-
-
         checkLoggin();
-        const peindingController = new AbortController();
-        const getPendingOrders = async () => {
-
-
-            setSpinner(true);
-            const token = await AsyncStorage.getItem('userSession');
-            const user_id = await AsyncStorage.getItem('userId');
-
-            await axios.get('/get_orders/pending/' + user_id, { signal: peindingController.signal }, {
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            })
-                .then(function (response) {
-
-                    setPendingorders(response.data);
-                    setPendingcount(response.data.length);
-                    setSpinner(false);
-
-                })
-                .catch(function (error) {
-
-                    setSpinner(false);
-                    console.log(error);
-
-                });
-
-        }
-
         getPendingOrders();
 
-        const unsubscribe = navigation.addListener('tabPress', e => {
+        const unsubscribe = navigation.addListener("tabPress", () => {
             checkLoggin();
             getPendingOrders();
         });
 
-
-        return () => { unsubscribe, peindingController.abort() }
-
-
-
+        return unsubscribe;
     }, []);
 
-    return (
-        <View style={styles.container}>
+    const handleWhatsAppPress = (phone) => {
+        Linking.openURL(`whatsapp://send?text=Hi, Greetings from greens&phone=+971${phone}`);
+    };
 
+    const handleCallPress = (phone) => {
+        Linking.openURL(`tel:${phone}`);
+    };
 
-            {/* Alerts */}
-            <SCLAlert
-                theme="warning"
-                show={alertshow}
-                cancellable={true}
-                onRequestClose={handleStatusClose}
-                title="Are your sure?"
-                subtitle="Press YES to move this to out for delivery"
-            >
-                <SCLAlertButton theme="success" onPress={() => setStatus(orderobject)}>YES</SCLAlertButton>
-                <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
-            </SCLAlert>
-
-            {/* End Alerts */}
-
-
-            <ScrollView>
-                <View style={styles.bgrey}>
-                    {
-                        Array.isArray(pendingorders) && pendingorders?.map((item) => {
-
-                            return (
-                                <View key={item.id}>
-                                    <View style={styles.orders}>
-                                        <View style={styles.greenbox}>
-                                            <Text style={styles.ordertxt}>Order ID</Text>
-                                            <Text style={styles.ordertxt}># {item.id}</Text>
-                                            <View style={styles.payment}>
-                                                <Icon size={24} color="black" name="cash" />
-                                                <View style={styles.payment_content}>
-                                                    <Text style={styles.typtxt}>{(item.payment_method == 'Cash On Delivery') ? item.payment_method : 'Card Payment'}</Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                        <View style={styles.content_box}>
-                                            <View style={styles.viewmain}>
-                                                <TouchableOpacity
-                                                    style={styles.viewButton}
-                                                    onPress={() => navigation.navigate('orderdetails', { order: item })}
-                                                >
-                                                    <Text style={{ color: Colors.Greens_White }}>View</Text>
-
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={styles.customerDetail}>
-                                                <Text style={{ color: Colors.Greens_Black }}>{item.customer_first_name} {item.customer_last_name}</Text>
-                                                <Text style={{ color: Colors.Greens_Black }}>Phone: {item.customer_phone} </Text>
-                                                <Text style={{ color: Colors.Greens_Black }}>No. of boxes : <Text style={styles.textBox}>{item.box} </Text></Text>
-                                                <Text style={{ color: Colors.Greens_Black }}>No. of boxes : <Text style={styles.textBox}>{item.box} </Text></Text>
-                                                <Text style={styles.orderPrice}>{item.total.formatted}</Text>
-                                            </View>
-                                        </View>
-
-                                    </View>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <View style={{ flex: 3 }}>
-                                            <TouchableOpacity
-                                                style={styles.statusButton}
-                                                onPress={() => setDeliveryStatus(item.id)}
-                                            >
-                                                <Text style={styles.statusButtonText}>Out for Delivery</Text>
-
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={{ flex: 1 }}>
-                                            <TouchableOpacity
-                                                style={styles.statusButtonWp}
-                                                onPress={() => Linking.openURL('whatsapp://send?text=Hi, Greetings from greens&phone=+971' + item.customer_phone)}
-                                            >
-                                                <Text style={styles.statusButtonText}>
-                                                    <Icon size={18} color="white" name="whatsapp" /></Text>
-
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={{ flex: 1 }}>
-                                            <TouchableOpacity
-                                                style={styles.statusButtonCall}
-                                                onPress={() => Linking.openURL(`tel:${item.customer_phone}`)}
-                                            >
-                                                <Text style={styles.statusButtonText}>
-                                                    <Icon size={18} color="white" name="phone" /> Call</Text>
-
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-
-
-                                </View>
-                            )
-                        })
-
-                    }
-
+    const renderOrderItem = (item) => (
+        <View key={item.orderId} style={styles.card}>
+            <View style={styles.cardHeader}>
+                <Text style={styles.orderIdText}>Order ID: #{item.orderId}</Text>
+                <View style={styles.paymentMethod}>
+                    <Icon size={24} color="#0f766e" name="cash" />
+                    <Text style={styles.paymentText}>
+                        {item.ord_payment_method === "Cash On Delivery"
+                            ? item.ord_payment_method
+                            : "Card Payment"}
+                    </Text>
                 </View>
-
-
-
-
-
-
-            </ScrollView>
+            </View>
+            <View style={styles.cardBody}>
+                <Text style={styles.customerName}>{item.orderCustomerName}</Text>
+                <Text style={styles.customerDetails}>Phone: {item.orderCustomerPhone}</Text>
+                <Text style={styles.customerDetails}>
+                    No. of boxes: <Text style={styles.bold}>{item.no_boxes}</Text>
+                </Text>
+                <Text style={styles.price}>AED {item.ord_grand_total}</Text>
+            </View>
+            <View style={styles.cardFooter}>
+                <TouchableOpacity
+                    style={styles.primaryButton}
+                    onPress={() => setDeliveryStatus(item.orderId)}
+                >
+                    <Text style={styles.primaryButtonText}>Out for Delivery</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.whatsappButton}
+                    onPress={() => handleWhatsAppPress(item.orderCustomerPhone)}
+                >
+                    <Icon size={20} color="#fff" name="whatsapp" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.callButton}
+                    onPress={() => handleCallPress(item.orderCustomerPhone)}
+                >
+                    <Icon size={20} color="#fff" name="phone" />
+                </TouchableOpacity>
+            </View>
         </View>
     );
+
+    return (
+        <ScrollView style={styles.container}>
+            <SCLAlert
+                theme="warning"
+                show={state.alertShow}
+                cancellable={true}
+                onRequestClose={handleStatusClose}
+                title="Are you sure?"
+                subtitle="Press YES to move this to out for delivery"
+            >
+                <SCLAlertButton theme="success" onPress={() => setStatus(state.orderObject)}>
+                    YES
+                </SCLAlertButton>
+                <SCLAlertButton theme="danger" onPress={handleStatusClose}>
+                    NO
+                </SCLAlertButton>
+            </SCLAlert>
+            {state?.pendingOrders?.map(renderOrderItem)}
+        </ScrollView>
+    );
 };
+
 const styles = StyleSheet.create({
     container: {
-        padding: 10,
+        padding: 16,
+        backgroundColor: "#f9fafb",
     },
-    textBox: {
-
-        fontSize: 23,
-        fontWeight: '600',
-        color: Colors.Greens_Black
+    card: {
+        backgroundColor: "#ffffff",
+        borderRadius: 12,
+        marginBottom: 16,
+        padding: 16,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 2,
     },
-
-    bgrey: {
-
-        padding: 15,
-        paddingBottom: 0,
-        borderRadius: 20
-    },
-    orders: {
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 10,
-        marginBottom: 15,
-        marginTop: 15,
+    cardHeader: {
         flexDirection: "row",
-        shadowColor: Colors.Greens_Black,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
-        shadowOpacity: 1,
-        shadowRadius: 9.51,
-        elevation: 4,
+        justifyContent: "space-between",
+        marginBottom: 12,
     },
-    greenbox: {
-        backgroundColor: Colors.Greens_Red,
-        height: 100,
-        width: 140,
-        borderRadius: 10,
-    },
-    ordertxt: {
-        color: '#fff',
-        fontSize: 14,
-        textAlign: 'center',
-        top: 10,
-        fontWeight: 'bold'
-    },
-    statusButton: {
-        backgroundColor: '#c61116',
-        borderBottomLeftRadius: 20,
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        borderColor: '#c61116',
-        top: -14,
-    },
-    statusButtonCall: {
-
-        backgroundColor: '#128C7E',
-        borderBottomRightRadius: 20,
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        borderColor: '#c61116',
-        top: -14,
-    },
-    statusButtonWp: {
-
-        backgroundColor: 'green',
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        borderColor: '#c61116',
-        top: -14,
-    },
-    statusButtonText: {
-        fontWeight: "600",
+    orderIdText: {
         fontSize: 16,
-        color: '#fff',
+        fontWeight: "bold",
+        color: "#374151",
     },
-    payment: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        top: 20,
+    paymentMethod: {
         flexDirection: "row",
-        padding: 5,
-        marginLeft: 3,
-        marginRight: 3,
-    },
-    pmtxt: {
-        fontSize: 10,
-        textAlign: 'center',
-    },
-    typtxt: {
-        fontSize: 12,
-        color: '#c61116',
-        fontWeight: "600",
-        textAlign: 'center',
-    },
-    payment_content: {
-        marginLeft: 5,
-    },
-    content_box: {
-        marginLeft: 10,
-        width: '58%'
-    },
-    viewButton: {
-
-        backgroundColor: '#327F40',
-        height: 30,
-        width: 70,
         alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 50,
-        right: 10,
     },
-    viewmain: {
-        alignItems: 'flex-end',
+    paymentText: {
+        marginLeft: 8,
+        color: "#0f766e",
+        fontSize: 14,
     },
-    customerDetail: {
-        maxWidth: 140,
-        bottom: 15,
+    cardBody: {
+        marginBottom: 12,
     },
-    orderPrice: {
+    customerName: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#111827",
+    },
+    customerDetails: {
+        fontSize: 14,
+        color: "#6b7280",
+    },
+    bold: {
+        fontWeight: "bold",
+    },
+    price: {
         fontSize: 18,
-        fontWeight: '600',
-        top: 10,
-        color: Colors.Greens_Black
+        fontWeight: "bold",
+        color: "#0f766e",
+        marginTop: 8,
     },
-    screen: {
+    cardFooter: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    primaryButton: {
+        backgroundColor: "#10b981",
+        padding: 12,
+        borderRadius: 8,
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f2f2f2",
-        width: 200,
-        alignSelf: "flex-end",
+        marginRight: 8,
     },
-    picker: {
-        width: 200,
-        height: 30,
-        bottom: 20,
-        marginTop: 30,
+    primaryButtonText: {
+        color: "#fff",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    whatsappButton: {
+        backgroundColor: "#25d366",
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 8,
+    },
+    callButton: {
+        backgroundColor: "#3b82f6",
+        padding: 12,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
     },
 });
+
 export default PendingScreen;
