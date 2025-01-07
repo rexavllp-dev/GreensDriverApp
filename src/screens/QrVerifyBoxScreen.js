@@ -38,7 +38,7 @@ const QrVerifyBox = ({ route, navigation }) => {
             showMessage({
                 message: "",
                 description: response.data.message,
-                type: response.data.status,
+                type: "warning",
                 textStyle: { fontSize: 20, padding: 10 },
             });
 
