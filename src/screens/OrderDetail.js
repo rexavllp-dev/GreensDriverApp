@@ -129,7 +129,7 @@ const OrderDetail = ({ route, navigation }) => {
                             <Text style={styles.text}><Text style={styles.label}>Name:</Text> {orderDetails?.ord_customer_name}</Text>
                             <Text style={styles.text}><Text style={styles.label}>Phone:</Text> {orderDetails?.ord_customer_phone}</Text>
                             <Text style={styles.text}><Text style={styles.label}>Email:</Text> {orderDetails?.ord_customer_email}</Text>
-                            <Text style={styles.text}><Text style={styles.label}>Alt Phone:</Text> {orderDetails?.ord_delivery_address?.alternate_mobile_number}</Text>
+                            <Text style={styles.text}><Text style={styles.label}>Alt Phone:</Text> {orderDetails?.ord_delivery_address?.alternate_mobile_number || 'Nil'}</Text>
                         </>
                     ) : (
                         <Text>Loading Order Details...</Text>
@@ -141,11 +141,15 @@ const OrderDetail = ({ route, navigation }) => {
                     <Text style={styles.sectionTitle}>
                         <Feather name="shopping-bag" size={16} color={Colors.Greens_Green} /> Items Ordered
                     </Text>
+                    <View style={styles.listHeader}>
+                        <Text style={styles.headerText}>Product Name</Text>
+                        <Text style={styles.headerText}>Quantity</Text>
+                    </View>
                     {orderDetails && orderDetails.orderitems && orderDetails.orderitems?.length > 0 ? (
                         orderDetails?.orderitems?.map((item) => (
                             <View key={item.order_item_id} style={styles.item}>
                                 <Text style={styles.itemText}>{item.prd_name}</Text>
-                                <Text style={styles.itemText}>{item.item_quantity}</Text>
+                                <Text style={styles.itemQty}>{item.item_quantity}</Text>
                             </View>
                         ))
                     ) : (
@@ -177,11 +181,51 @@ const styles = StyleSheet.create({
     card: { backgroundColor: Colors.Greens_White, borderRadius: 10, padding: 15, marginBottom: 15, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 5, elevation: 2 },
     sectionTitle: { fontSize: 18, fontWeight: '700', color: Colors.Greens_Black, marginBottom: 10 },
     text: { fontSize: 16, color: Colors.Greens_Black, marginBottom: 5 },
+    listHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        paddingBottom: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.Greens_LightGray,
+    },
+    headerText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.Greens_Black,
+    },
+    itemQty: {
+        fontSize: 14,
+        color: Colors.Greens_White,
+        backgroundColor: Colors.Greens_Green,
+        fontWeight: '500',
+        padding: 5,
+        borderRadius: 50,
+        flex: 1,
+        textAlign: 'center',
+    },
+    item: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.Greens_LightGray,
+        marginBottom: 5,
+    },
     label: { fontWeight: '600' },
-    item: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderRadius: 5, marginBottom: 5, backgroundColor: Colors.Greens_LightGray },
+    // item: { flexDirection: 'row', justifyContent: 'space-between', gap: 5, alignItems: 'center', padding: 10, borderRadius: 5, marginBottom: 5, backgroundColor: Colors.Greens_LightGray },
     itemReturned: { backgroundColor: Colors.Greens_Red },
-    itemText: { fontSize: 16, color: Colors.Greens_Black },
+    // itemText: { fontSize: 16, color: Colors.Greens_Black, fontWeight: '500' },
+    itemText: {
+        fontSize: 16,
+        color: Colors.Greens_Black,
+        fontWeight: '500',
+        flex: 2,
+    },
+    // itemQty: { fontSize: 14, color: Colors.Greens_White, backgroundColor: Colors.Greens_Green, fontWeight: '500', padding: 8, borderRadius: 50 },
     itemReturnedText: { color: Colors.Greens_White },
+    divider: { height: 1, backgroundColor: Colors.Greens_LightGray, marginVertical: 5 },
 });
 
 export default OrderDetail;
