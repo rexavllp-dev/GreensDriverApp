@@ -6,7 +6,7 @@ const instance = axios.create({
     // baseURL: 'http://10.0.2.2:5000/api/v1/',
     // baseURL: 'http://192.168.10.177:5000/api/v1/',
 
-    
+    baseURL: 'http://192.168.10.142:5000/api/v1/',
     timeout: 10000,
 });
 export default instance;     

@@ -12,21 +12,20 @@ const Tab = createMaterialTopTabNavigator()
 
 const TabNavigator = () => {
 
-    const {pendingcount}  = useContext(AuthContext);
+    const { pendingcount } = useContext(AuthContext);
 
     return <View style={styles.container}>
         <Tab.Navigator screenOptions={{
             tabBarLabelStyle: { fontSize: 12 },
         }} >
             <Tab.Screen name='Pending' component={PendingScreen} options={{
-           tabBarBadge:()=> { return ( <Text style={{marginTop:10, textAlign:'center', width:25, height:25, padding:2, fontWeight:'bold',  color:Colors.Greens_White, fontSize:15, borderRadius:20, backgroundColor:'red'}}>{pendingcount}</Text> ) }
-          }}/>
-            <Tab.Screen 
-            name='Ongoing' component={OngoingScreen} />
+                tabBarBadge: () => { return (<Text style={{ marginTop: 10, textAlign: 'center', width: 25, height: 25, padding: 2, fontWeight: 'bold', color: Colors.Greens_White, fontSize: 15, borderRadius: 20, backgroundColor: 'red' }}>{pendingcount}</Text>) }
+            }} />
+            <Tab.Screen
+                name='Ongoing' component={OngoingScreen} />
 
             <Tab.Screen
-        
-            name='Completed' component={CompletedScreen} />
+                name='Completed' component={CompletedScreen} />
         </Tab.Navigator>
     </View>
 }
