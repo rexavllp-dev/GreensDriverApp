@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [spinner, setSpinner] = useState(false);
   const [loggedin, setLoggedin] = useState(null);
   const [pendingcount, setPendingcount] = useState(0);
-  console.log('pendingcount: ', pendingcount);
+ 
 
 
   const signin = async (email, password) => {
