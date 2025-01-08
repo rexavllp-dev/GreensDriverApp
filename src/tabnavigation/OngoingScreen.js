@@ -64,11 +64,11 @@ const OnGoingScreen = ({ navigation }) => {
         console.log("checking order ongoing", order);
         setAlertshow(false);
         const token = await AsyncStorage.getItem('userSession');
-    
+
         try {
             let endpoint = '';
             let successMessage = '';
-    
+
             switch (status) {
                 case 'delay':
                     endpoint = 'driver/update_delay';
@@ -86,16 +86,16 @@ const OnGoingScreen = ({ navigation }) => {
                     console.error('Unsupported status:', status);
                     return;
             }
-    
+
             const response = await axios.put(`${endpoint}/${order}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
+
             console.log('response update status', response);
             console.log('response update status', response.data.success);
-    
+
             if (response.data.success) {
                 alert(successMessage);
                 // showMessage({
@@ -105,7 +105,7 @@ const OnGoingScreen = ({ navigation }) => {
                 //     fontStyle: { fontSize: 20 }
                 // });
             }
-    
+
             // Refresh the orders list after status update
             getOngoingOrders();
         } catch (error) {
@@ -113,7 +113,7 @@ const OnGoingScreen = ({ navigation }) => {
             alert('Network unavailable/unstable');
         }
     };
-    
+
 
     return (
         <View style={styles.container}>
@@ -177,7 +177,7 @@ const OnGoingScreen = ({ navigation }) => {
 
                                 <View style={styles.actionRow}>
                                     <View style={styles.priceContainer}>
-                                        <Text style={styles.orderPrice}>{item.ord_grand_total}</Text>
+                                        <Text style={styles.orderPrice}>AED {item.ord_grand_total}</Text>
                                     </View>
                                     <TouchableOpacity
                                         style={styles.statusButtonCall}
@@ -360,8 +360,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     orderPrice: {
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 20,
+        fontWeight: '700',
         color: Colors.Greens_Black,
     },
     statusButtonCall: {

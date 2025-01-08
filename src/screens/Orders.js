@@ -7,21 +7,20 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { AuthContext } from '../providers/AuthProvider';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const Orders = ({navigation}) => {
+const Orders = ({ navigation }) => {
 
-    const {logout, user}            = useContext(AuthContext);
+    const { logout, user } = useContext(AuthContext);
     const [search, setSearch] = useState();
-    
 
-    const handleSearchOrder = () =>{
-            
-        if(isNaN(search))
-        {
-           alert('Please Enter numbers only');
+
+    const handleSearchOrder = () => {
+
+        if (isNaN(search)) {
+            alert('Please Enter numbers only');
 
         } else {
 
-            navigation.navigate('searchresults', {query:search});
+            navigation.navigate('searchresults', { query: search });
         }
     }
 
@@ -35,13 +34,13 @@ const Orders = ({navigation}) => {
             <ImageBackground source={require("../Images/orders-bg.png")} style={styles.welcomeContainer}>
 
                 <View style={styles.TextHolder}>
-                    <Text style={styles.UserTxt}>Hi, <Text style={styles.UserTxt}>{(user) ? user.first_name : ''}</Text></Text>
-{/*                     
+                    <Text style={styles.UserTxt}>Hi, <Text style={styles.UserTxt}>{user ? user.first_name.replace(/"/g, '') : ''}</Text></Text>
+                    {/*                     
                     <TouchableOpacity onPress={logout}>
                         <Text>Logout</Text>
                     </TouchableOpacity> */}
                 </View>
-                <View style={{ flex: 1, alignItems: "flex-end", padding:15 }}>
+                <View style={{ flex: 1, alignItems: "flex-end", padding: 15 }}>
                     <TouchableOpacity style={styles.signinButton} onPress={logout}>
                         <Icon size={28} color="white" name="power" />
                     </TouchableOpacity>
@@ -62,7 +61,7 @@ const Orders = ({navigation}) => {
                             placeholderTextColor={Colors.Greens_Black}
                             onChangeText={setSearch}
                             style={styles.inputText}
-                            onSubmitEditing={() => handleSearchOrder() }
+                            onSubmitEditing={() => handleSearchOrder()}
                         />
                     </View>
                 </View>
