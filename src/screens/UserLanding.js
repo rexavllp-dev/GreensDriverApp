@@ -48,7 +48,7 @@ const UserLanding = ({ navigation }) => {
                         <Feather size={70} color="#327F40" name="user" />
                     </View>
                     <Text style={styles.UserTxt}>Welcome, <Text style={styles.UserTxt}>{(user) ? user.first_name : ''}</Text></Text>
-                    <Text style={{ color: Colors.Greens_White, marginTop: 15 }}>Version 1.9</Text>
+                    <Text style={{ color: Colors.Greens_White, marginTop: 15 }}>Version 2.0</Text>
                 </View>
                 <View style={styles.Btnview}>
                     <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('verifyorders')} >

@@ -33,7 +33,7 @@ const TabNavigator = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 4, top: -40,
+        flex: 4, top: -10
     },
 });
 

@@ -11,6 +11,7 @@ import Upload from '../screens/Upload';
 import VerifyOrders from '../screens/VerifyOrders';
 import DeliveryReturn from '../screens/DeliveryReturn';
 import SearchResults from '../screens/SearchResults';
+import CashPaymentScreen from '../screens/CashPaymentScreen';
 
 const Stack = createStackNavigator()
 
@@ -28,6 +29,7 @@ const AppStack = () => {
             <Stack.Screen name="qrscan" component={QrScan} />
             <Stack.Screen name="qrverifybox" component={QrVerifyBox} />
             <Stack.Screen name="searchresults" component={SearchResults} />
+            <Stack.Screen name="cashpayment" component={CashPaymentScreen} />
 
 
         </Stack.Navigator>

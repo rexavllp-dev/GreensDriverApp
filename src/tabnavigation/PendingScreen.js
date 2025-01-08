@@ -122,13 +122,13 @@ const PendingScreen = ({ navigation }) => {
     };
 
     const renderOrderItem = (item) => (
-        <View key={item.orderId} style={styles.card}>
+        <View key={item.orderId} index={item.orderId} style={styles.card}>
             <View style={styles.cardHeader}>
                 <Text style={styles.orderIdText}>Order ID: #{item.orderId}</Text>
                 <View style={styles.paymentMethod}>
                     <Icon size={24} color="#0f766e" name="cash" />
                     <Text style={styles.paymentText}>
-                        {item.ord_payment_method === "Cash On Delivery"
+                        {item.ord_payment_method === "Cash on Delivery"
                             ? item.ord_payment_method
                             : "Card Payment"}
                     </Text>
