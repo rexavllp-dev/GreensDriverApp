@@ -92,16 +92,26 @@ const PendingScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        checkLoggin();
+        // Initial load
         getPendingOrders();
 
-        const unsubscribe = navigation.addListener("tabPress", () => {
-            checkLoggin();
+        // Listen for both focus and tabPress events
+        const unsubscribeFocus = navigation.addListener('focus', () => {
             getPendingOrders();
+            checkLoggin();
         });
 
-        return unsubscribe;
-    }, []);
+        const unsubscribeTabPress = navigation.addListener('tabPress', () => {
+            getPendingOrders();
+            checkLoggin();
+        });
+
+        // Cleanup function
+        return () => {
+            unsubscribeFocus();
+            unsubscribeTabPress();
+        };
+    }, [navigation]);
 
     const handleWhatsAppPress = (phone) => {
         Linking.openURL(`whatsapp://send?text=Hi, Greetings from greens&phone=+971${phone}`);

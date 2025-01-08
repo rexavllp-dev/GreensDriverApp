@@ -29,6 +29,8 @@ const TabNavigator = () => {
         </Tab.Navigator>
     </View>
 }
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 4, top: -40,
