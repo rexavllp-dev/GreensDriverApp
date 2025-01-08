@@ -13,7 +13,7 @@ const OnGoingScreen = ({ navigation }) => {
     const [ongoingorders, setOngoingorders] = useState([]);
     const { setSpinner, checkLoggin, user } = useContext(AuthContext);
     const [alertshow, setAlertshow] = useState(false);
-    const [orderobject, setOrderobject] = useState([]);
+    const [orderobject, setOrderobject] = useState(null);
     const [statusobject, setStatusobject] = useState('');
 
     const getOngoingOrders = async () => {
@@ -23,8 +23,8 @@ const OnGoingScreen = ({ navigation }) => {
             const token = await AsyncStorage.getItem('userSession');
             const response = await axios.get(`driver/get_out_for_delivery`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
             setOngoingorders(response.data.result);
         } catch (error) {
@@ -50,20 +50,26 @@ const OnGoingScreen = ({ navigation }) => {
         };
     }, [navigation]);
 
-    const handleCurrentStatus = async (status, order) => {
+    const handleCurrentStatus = (status, order) => {
         setOrderobject(order);
         setStatusobject(status);
         setAlertshow(true);
-    }
+    };
 
-    const handleStatusClose = async () => {
+    const handleCompleteOrder = (order) => {
+        setOrderobject(order);
+        setStatusobject('complete');
+        setAlertshow(true);
+    };
+
+    const handleStatusClose = () => {
         setAlertshow(false);
-    }
+    };
 
-    const setStatus = async (status, order) => {
-        console.log("checking order ongoing", order);
+    const setStatus = async () => {
         setAlertshow(false);
         const token = await AsyncStorage.getItem('userSession');
+        const { statusobject: status, orderobject: order } = { statusobject, orderobject };
 
         try {
             let endpoint = '';
@@ -72,16 +78,16 @@ const OnGoingScreen = ({ navigation }) => {
             switch (status) {
                 case 'delay':
                     endpoint = 'driver/update_delay';
-                    successMessage = 'Order marked as delayed';
+                    successMessage = 'Order marked as delayed successfully';
                     break;
                 case 'attempt':
                     endpoint = 'driver/update_attempt';
-                    successMessage = 'Delivery attempt recorded';
+                    successMessage = 'Delivery attempt recorded successfully';
                     break;
                 case 'complete':
-                    endpoint = 'driver/update_delivered';
-                    successMessage = 'Order marked as complete';
-                    break;
+                    // Navigate to `qrscan` without API request
+                    navigation.replace('qrscan', { order });
+                    return;
                 default:
                     console.error('Unsupported status:', status);
                     return;
@@ -89,31 +95,19 @@ const OnGoingScreen = ({ navigation }) => {
 
             const response = await axios.put(`${endpoint}/${order}`, {}, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
-
-            console.log('response update status', response);
-            console.log('response update status', response.data.success);
 
             if (response.data.success) {
                 alert(successMessage);
-                // showMessage({
-                //     message: "",
-                //     description: successMessage,
-                //     type: 'success',
-                //     fontStyle: { fontSize: 20 }
-                // });
+                getOngoingOrders();
             }
-
-            // Refresh the orders list after status update
-            getOngoingOrders();
         } catch (error) {
             console.error('Error updating order status:', error);
             alert('Network unavailable/unstable');
         }
     };
-
 
     return (
         <View style={styles.container}>
@@ -125,113 +119,125 @@ const OnGoingScreen = ({ navigation }) => {
                 title="Are you sure?"
                 subtitle="Press YES to update the order status"
             >
-                <SCLAlertButton theme="success" onPress={() => setStatus(statusobject, orderobject)}>YES</SCLAlertButton>
-                <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
+                <SCLAlertButton theme="success" onPress={setStatus}>
+                    YES
+                </SCLAlertButton>
+                <SCLAlertButton theme="danger" onPress={handleStatusClose}>
+                    NO
+                </SCLAlertButton>
             </SCLAlert>
 
             <ScrollView>
                 <View style={styles.bgrey}>
-                    {Array.isArray(ongoingorders) && ongoingorders?.map((item) => (
-                        <View key={item.orderId}>
-                            <View style={styles.orders}>
-                                <View style={styles.orderRow}>
-                                    <View style={styles.greenbox}>
-                                        <Text style={styles.ordertxt}>Order ID</Text>
-                                        <Text style={styles.ordertxt}>
-                                            # {item.orderId}
-                                            {item.ord_contactless_delivery &&
-                                                <Icon size={18} color="red" name="bell-off" />
-                                            }
-                                        </Text>
-                                        <View style={styles.payment}>
-                                            <Icon size={24} color="black" name="cash" />
-                                            <View style={styles.payment_content}>
-                                                <Text style={styles.typtxt}>
-                                                    {item.ord_payment_method == 'Cash on Delivery'
-                                                        ? item.ord_payment_method
-                                                        : 'Credit Card/ Debit Card'
+                    {Array.isArray(ongoingorders) &&
+                        ongoingorders.map((item) => (
+                            <View key={item.orderId}>
+                                <View style={styles.orders}>
+                                    <View style={styles.orderRow}>
+                                        <View style={styles.greenbox}>
+                                            <Text style={styles.ordertxt}>Order ID</Text>
+                                            <Text style={styles.ordertxt}>
+                                                # {item.orderId}
+                                                {item.ord_contactless_delivery && (
+                                                    <Icon size={18} color="red" name="bell-off" />
+                                                )}
+                                            </Text>
+                                            <View style={styles.payment}>
+                                                <Icon size={24} color="black" name="cash" />
+                                                <View style={styles.payment_content}>
+                                                    <Text style={styles.typtxt}>
+                                                        {item.ord_payment_method === 'Cash on Delivery'
+                                                            ? item.ord_payment_method
+                                                            : 'Credit Card/ Debit Card'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        <View style={styles.content_box}>
+                                            <View style={styles.viewmain}>
+                                                <TouchableOpacity
+                                                    style={styles.viewButton}
+                                                    onPress={() =>
+                                                        navigation.navigate('orderdetails', { order: item })
                                                     }
+                                                >
+                                                    <Text style={styles.viewButtonText}>View</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={styles.customerDetail}>
+                                                <Text style={styles.customerName}>{item.ord_customer_name}</Text>
+                                                <Text style={styles.customerPhone}>
+                                                    Phone: {item.ord_customer_phone}
+                                                </Text>
+                                                <Text style={styles.boxCount}>
+                                                    No. of boxes:{' '}
+                                                    <Text style={styles.textBox}>{item.no_boxes}</Text>
                                                 </Text>
                                             </View>
                                         </View>
                                     </View>
 
-                                    <View style={styles.content_box}>
-                                        <View style={styles.viewmain}>
+                                    <View style={styles.actionRow}>
+                                        <View style={styles.priceContainer}>
+                                            <Text style={styles.orderPrice}>{item.ord_grand_total}</Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            style={styles.statusButtonCall}
+                                            onPress={() => Linking.openURL(`tel:${item.ord_customer_phone}`)}
+                                        >
+                                            <Text style={styles.statusButtonText}>
+                                                <Icon size={18} color="white" name="phone" /> Call
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.statusButtonWhats}
+                                            onPress={() =>
+                                                Linking.openURL(
+                                                    `whatsapp://send?text=Hi, this is ${
+                                                        user?.first_name?.replace(/"/g, '') || 'Driver'
+                                                    } from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.&phone=+971${item.customer_phone}`
+                                                )
+                                            }
+                                        >
+                                            <Text style={styles.statusButtonText}>
+                                                <Icon size={18} color="white" name="whatsapp" /> Chat
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <View style={styles.statusButtonsContainer}>
+                                        <View style={styles.statusButtonsRow}>
                                             <TouchableOpacity
-                                                style={styles.viewButton}
-                                                onPress={() => navigation.navigate('orderdetails', { order: item })}
+                                                style={[styles.statusButton, styles.delayButton]}
+                                                onPress={() => handleCurrentStatus('delay', item.orderId)}
                                             >
-                                                <Text style={styles.viewButtonText}>View</Text>
+                                                <Text style={styles.statusButtonText}>
+                                                    <Icon size={18} color="white" name="clock-outline" /> Delay
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.statusButton, styles.attemptButton]}
+                                                onPress={() => handleCurrentStatus('attempt', item.orderId)}
+                                            >
+                                                <Text style={styles.statusButtonText}>
+                                                    <Icon size={18} color="white" name="refresh" /> Attempt
+                                                </Text>
                                             </TouchableOpacity>
                                         </View>
-                                        <View style={styles.customerDetail}>
-                                            <Text style={styles.customerName}>{item.ord_customer_name}</Text>
-                                            <Text style={styles.customerPhone}>Phone: {item.ord_customer_phone}</Text>
-                                            <Text style={styles.boxCount}>
-                                                No. of boxes: <Text style={styles.textBox}>{item.no_boxes}</Text>
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
 
-                                <View style={styles.actionRow}>
-                                    <View style={styles.priceContainer}>
-                                        <Text style={styles.orderPrice}>AED {item.ord_grand_total}</Text>
-                                    </View>
-                                    <TouchableOpacity
-                                        style={styles.statusButtonCall}
-                                        onPress={() => Linking.openURL(`tel:${item.ord_customer_phone}`)}
-                                    >
-                                        <Text style={styles.statusButtonText}>
-                                            <Icon size={18} color="white" name="phone" /> Call
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.statusButtonWhats}
-                                        onPress={() => Linking.openURL(
-                                            `whatsapp://send?text=Hi, this is ${user?.first_name?.replace(/"/g, "")} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.&phone=+971${item.customer_phone}`
-                                        )}
-                                    >
-                                        <Text style={styles.statusButtonText}>
-                                            <Icon size={18} color="white" name="whatsapp" /> Chat
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={styles.statusButtonsContainer}>
-                                    <View style={styles.statusButtonsRow}>
                                         <TouchableOpacity
-                                            style={[styles.statusButton, styles.delayButton]}
-                                            onPress={() => handleCurrentStatus('delay', item.orderId)}
+                                            style={[styles.completeButton]}
+                                            onPress={() => handleCompleteOrder(item)}
                                         >
                                             <Text style={styles.statusButtonText}>
-                                                <Icon size={18} color="white" name="clock-outline" /> Delay
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.statusButton, styles.attemptButton]}
-                                            onPress={() => handleCurrentStatus('attempt', item.orderId)}
-                                        >
-                                            <Text style={styles.statusButtonText}>
-                                                <Icon size={18} color="white" name="refresh" /> Attempt
+                                                <Icon size={18} color="white" name="check" /> Complete
                                             </Text>
                                         </TouchableOpacity>
                                     </View>
-
-                                    <TouchableOpacity
-                                        style={[styles.completeButton]}
-                                        onPress={() => handleCurrentStatus('complete', item.orderId)}
-                                    >
-                                        <Text style={styles.statusButtonText}>
-                                            <Icon size={18} color="white" name="check" /> Complete
-                                        </Text>
-                                    </TouchableOpacity>
                                 </View>
-
                             </View>
-                        </View>
-                    ))}
+                        ))}
                 </View>
             </ScrollView>
         </View>
@@ -239,9 +245,7 @@ const OnGoingScreen = ({ navigation }) => {
 };
 
 
-
 const styles = StyleSheet.create({
-    // ... existing styles remain the same ...
     container: {
         flex: 1,
         padding: 10,
