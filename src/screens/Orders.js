@@ -32,7 +32,7 @@ const Orders = ({ navigation }) => {
 
                 {/* User Greeting */}
                 <View style={styles.userGreeting}>
-                    <Text style={styles.greetingText}>Hi, <Text style={styles.userName}>{(user) ? user.first_name : ''}</Text></Text>
+                    <Text style={styles.greetingText}>Hi, <Text style={styles.userName}>{(user) ? user.first_name.replace(/"/g, '') : ''}</Text></Text>
                 </View>
 
                 {/* Logout Button */}

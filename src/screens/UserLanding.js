@@ -47,7 +47,7 @@ const UserLanding = ({ navigation }) => {
 
                         <Feather size={70} color="#327F40" name="user" />
                     </View>
-                    <Text style={styles.UserTxt}>  Welcome, {user ? user.first_name.replace(/"/g, '') : ''} </Text>
+                    <Text style={styles.UserTxt}>  Welcome, {user ? user.first_name?.replace(/"/g, '') : ''} </Text>
                     <Text style={{ color: Colors.Greens_White, marginTop: 15 }}>Version 2.0</Text>
                 </View>
                 <View style={styles.Btnview}>

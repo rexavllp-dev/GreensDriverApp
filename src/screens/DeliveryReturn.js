@@ -103,7 +103,7 @@ const DeliveryReturn = ({ navigation }) => {
                         <Text style={styles.noOrdersText}>No return and replace orders</Text>
                     ) : (
                         Array.isArray(returnorders) && returnorders?.map((item) => (
-                            <View key={item.order_id} style={styles.orderCard}>
+                            <View key={item.order_item_id} style={styles.orderCard}>
                                 {/* Top Section */}
                                 <View style={styles.cardHeader}>
                                     <Text style={styles.highlightText}>Order ID: #{item.order_id}</Text>
@@ -132,9 +132,9 @@ const DeliveryReturn = ({ navigation }) => {
                                     </Text>
                                     <Text style={styles.detailText}>
                                         {item.order_type === 'replace'
-                                            ? `Replace Quantity: ${item.return_qty}`
+                                            ? `Replace Quantity: ${item?.return_qty}`
                                             : item.order_type === 'return'
-                                                ? `Return Quantity: ${item.return_qty}`
+                                                ? `Return Quantity: ${item?.return_qty}`
                                                 : null}
                                     </Text>
 
