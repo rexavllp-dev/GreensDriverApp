@@ -109,8 +109,8 @@ const OrderDetail = ({ route, navigation }) => {
                             <Text style={styles.text}>
                                 <Text style={styles.label}>Zipcode:</Text> {orderDetails.ord_delivery_address.zip_code}
                             </Text>
-                            <Text style={styles.text}>
-                                <Text style={styles.label}>Delivery Instructions:</Text> {orderDetails.ord_delivery_address.contactless_delivery}
+                            <Text style={[styles.text, { backgroundColor: '#CCFFCC', padding: 5 , borderRadius: 5,fontWeight: 'bold' }]}>
+                                <Text style={styles.label}>Delivery Instructions:</Text> {orderDetails.ord_delivery_address.contactless_delivery || 'No Instructions'} 
                             </Text>
                         </>
                     ) : (
@@ -146,12 +146,41 @@ const OrderDetail = ({ route, navigation }) => {
                         <Text style={styles.headerText}>Quantity</Text>
                     </View>
                     {orderDetails && orderDetails.orderitems && orderDetails.orderitems?.length > 0 ? (
-                        orderDetails?.orderitems?.map((item) => (
-                            <View key={item.order_item_id} style={styles.item}>
-                                <Text style={styles.itemText}>{item.prd_name}</Text>
-                                <Text style={styles.itemQty}>{item.item_quantity}</Text>
-                            </View>
-                        ))
+                        orderDetails.orderitems.map((item) => {
+                            // Determine the background color based on conditions
+                            let backgroundColor = null;
+                            let label = '';
+                            if (item.returnId && item.return_status === 3) {
+                                backgroundColor = '#FFCCCC'; // Light Red for returns
+                                label = 'Return ';
+                            } else if (item.replaceId && item.replace_status === 3) {
+                                backgroundColor = '#CCFFCC'; // Light Green for replacements
+                                label = 'Replace';
+                            }
+
+                            return (
+                                <View
+                                    key={item.order_item_id}
+                                    style={[styles.item, backgroundColor ? { backgroundColor, borderRadius: 10, padding: 5 } : null]}
+                                >
+                                    <Text style={styles.itemText}>{item.prd_name}</Text>
+                                    <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 5, marginRight: 2 }}>
+                                        <Text style={styles.itemQty}>{item.item_quantity}</Text>
+                                        {label ? (
+                                            <View style={[
+                                                styles.labelContainer,
+                                                {
+                                                    backgroundColor: item.returnId && item.return_status === 3 ? '#FF6347' : '#32CD32', // Red for returns, Medium Green for replacements
+                                                    borderColor: item.returnId && item.return_status === 3 ? '#E74C3C' : '#228B22', // Darker shade for border
+                                                },
+                                            ]}>
+                                                <Text style={styles.labelText}>{label}</Text>
+                                            </View>
+                                        ) : null}
+                                    </View>
+                                </View>
+                            );
+                        })
                     ) : (
                         <Text>Loading Order Items...</Text>
                     )}
@@ -196,6 +225,7 @@ const styles = StyleSheet.create({
     },
     itemQty: {
         fontSize: 14,
+        width: 50,
         color: Colors.Greens_White,
         backgroundColor: Colors.Greens_Green,
         fontWeight: '500',
@@ -203,6 +233,28 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         flex: 1,
         textAlign: 'center',
+        marginBottom: 8
+    },
+
+    labelContainer: {
+        backgroundColor: '#FF6347', // Eye-catching Tomato Red
+        paddingVertical: 3, // Reduced padding for compact badge style
+        paddingHorizontal: 12, // Wider horizontal padding for better shape
+        borderRadius: 20, // Rounded badge shape
+        shadowColor: '#000', // Add a shadow for depth
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4, // Elevation for Android shadow
+        borderWidth: 1, // Optional: Adds a slight border for definition
+        borderColor: '#FF4500', // Slightly darker red for border
+    },
+
+    labelText: {
+        color: '#FFF', // White text for contrast
+        fontSize: 12, // Compact font size
+        fontWeight: '700', // Bold text for readability
+        textTransform: 'uppercase', // Make text uppercase for badge-like appearance
+        letterSpacing: 0.5, // Slight spacing for better readability
     },
     item: {
         flexDirection: 'row',
