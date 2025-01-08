@@ -138,7 +138,7 @@ const OnGoingScreen = ({ navigation }) => {
                                             <Text style={styles.ordertxt}>Order ID</Text>
                                             <Text style={styles.ordertxt}>
                                                 # {item.orderId}
-                                                {item.ord_contactless_delivery && (
+                                                {item.ord_contactless_delivery === "Do not ring the bell" && (
                                                     <Icon size={18} color="red" name="bell-off" />
                                                 )}
                                             </Text>

@@ -110,7 +110,7 @@ const OrderDetail = ({ route, navigation }) => {
                                 <Text style={styles.label}>Zipcode:</Text> {orderDetails.ord_delivery_address.zip_code}
                             </Text>
                             <Text style={[styles.text, { backgroundColor: '#CCFFCC', padding: 5 , borderRadius: 5,fontWeight: 'bold' }]}>
-                                <Text style={styles.label}>Delivery Instructions:</Text> {orderDetails.ord_delivery_address.contactless_delivery || 'No Instructions'} 
+                                <Text style={styles.label}>Delivery Instructions:</Text> {orderDetails.contactless_delivery || 'No Instructions'} 
                             </Text>
                         </>
                     ) : (

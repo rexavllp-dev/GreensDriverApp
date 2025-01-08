@@ -30,12 +30,12 @@ const CashPaymentScreen = ({ route, navigation }) => {
                 );
                 console.log("response cash received", response);
                 if (response.data.success) {
-                    alert(response.data.message);
-                    showMessage({
-                        message: "Success",
-                        description: "Order cash received updated successfully",
-                        type: "success",
-                    });
+                    alert("Order has been marked as paid successfully");
+                    // showMessage({
+                    //     message: "Success",
+                    //     description: "cash received updated successfully",
+                    //     type: "success",
+                    // });
                     navigation.replace("orders"); // Navigate to the orders screen
                 } else {
                     alert(response.data.message);
