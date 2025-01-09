@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Linking, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { showMessage } from "react-native-flash-message";
@@ -178,12 +178,21 @@ const OnGoingScreen = ({ navigation }) => {
                                 >
                                     <Icon name="phone" size={24} color="white" />
                                 </TouchableOpacity>
-
                                 <TouchableOpacity
                                     style={[styles.iconButton, styles.whatsappButton]}
-                                    onPress={() => Linking.openURL(
-                                        `whatsapp://send?text=Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.&phone=+971${item.customer_phone}`
-                                    )}
+                                    onPress={() => {
+                                        const message = `Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+                                        const phone = `+971${item.ord_customer_phone}`;
+                                        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phone}`;
+
+                                        Linking.canOpenURL(url).then((supported) => {
+                                            if (supported) {
+                                                Linking.openURL(url);
+                                            } else {
+                                                Alert.alert('Error', 'WhatsApp is not installed on this device.');
+                                            }
+                                        }).catch((err) => console.error('An error occurred', err));
+                                    }}
                                 >
                                     <Icon name="whatsapp" size={24} color="white" />
                                 </TouchableOpacity>
