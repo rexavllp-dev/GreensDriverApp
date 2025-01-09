@@ -119,317 +119,283 @@ const OnGoingScreen = ({ navigation }) => {
                 title="Are you sure?"
                 subtitle="Press YES to update the order status"
             >
-                <SCLAlertButton theme="success" onPress={setStatus}>
-                    YES
-                </SCLAlertButton>
-                <SCLAlertButton theme="danger" onPress={handleStatusClose}>
-                    NO
-                </SCLAlertButton>
+                <SCLAlertButton theme="success" onPress={setStatus}>YES</SCLAlertButton>
+                <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
             </SCLAlert>
 
             <ScrollView>
-                <View style={styles.bgrey}>
-                    {Array.isArray(ongoingorders) &&
-                        ongoingorders.map((item) => (
-                            <View key={item.orderId}>
-                                <View style={styles.orders}>
-                                    <View style={styles.orderRow}>
-                                        <View style={styles.greenbox}>
-                                            <Text style={styles.ordertxt}>Order ID</Text>
-                                            <Text style={styles.ordertxt}>
-                                                # {item.orderId}
-                                                {item.ord_contactless_delivery && (
-                                                    <Icon size={18} color="red" name="bell-off" />
-                                                )}
-                                            </Text>
-                                            <View style={styles.payment}>
-                                                <Icon size={24} color="black" name="cash" />
-                                                <View style={styles.payment_content}>
-                                                    <Text style={styles.typtxt}>
-                                                        {item.ord_payment_method === 'Cash on Delivery'
-                                                            ? item.ord_payment_method
-                                                            : 'Credit Card/ Debit Card'}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
+                <View style={styles.ordersList}>
+                    {Array.isArray(ongoingorders) && ongoingorders.map((item) => (
+                        <View key={item.orderId} style={styles.orderCard}>
+                            {/* Header Section */}
+                            <View style={styles.orderHeader}>
+                                <View style={styles.orderIdContainer}>
+                                    <Text style={styles.orderIdText}>
+                                        ORDER #{item.orderId}
+                                        {item.ord_contactless_delivery && (
+                                            <Icon size={20} color="#FF4444" name="bell-off" style={styles.bellIcon} />
+                                        )}
+                                    </Text>
+                                </View>
+                                <TouchableOpacity
+                                    style={styles.viewButton}
+                                    onPress={() => navigation.navigate('orderdetails', { order: item })}
+                                >
+                                    <Text style={styles.viewButtonText}>View Details</Text>
+                                </TouchableOpacity>
+                            </View>
 
-                                        <View style={styles.content_box}>
-                                            <View style={styles.viewmain}>
-                                                <TouchableOpacity
-                                                    style={styles.viewButton}
-                                                    onPress={() =>
-                                                        navigation.navigate('orderdetails', { order: item })
-                                                    }
-                                                >
-                                                    <Text style={styles.viewButtonText}>View</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={styles.customerDetail}>
-                                                <Text style={styles.customerName}>{item.ord_customer_name}</Text>
-                                                <Text style={styles.customerPhone}>
-                                                    Phone: {item.ord_customer_phone}
-                                                </Text>
-                                                <Text style={styles.boxCount}>
-                                                    No. of boxes:{' '}
-                                                    <Text style={styles.textBox}>{item.no_boxes}</Text>
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    <View style={styles.actionRow}>
-                                        <View style={styles.priceContainer}>
-                                            <Text style={styles.orderPrice}>{item.ord_grand_total}</Text>
-                                        </View>
-                                        <TouchableOpacity
-                                            style={styles.statusButtonCall}
-                                            onPress={() => Linking.openURL(`tel:${item.ord_customer_phone}`)}
-                                        >
-                                            <Text style={styles.statusButtonText}>
-                                                <Icon size={18} color="white" name="phone" /> Call
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.statusButtonWhats}
-                                            onPress={() =>
-                                                Linking.openURL(
-                                                    `whatsapp://send?text=Hi, this is ${
-                                                        user?.first_name?.replace(/"/g, '') || 'Driver'
-                                                    } from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.&phone=+971${item.customer_phone}`
-                                                )
-                                            }
-                                        >
-                                            <Text style={styles.statusButtonText}>
-                                                <Icon size={18} color="white" name="whatsapp" /> Chat
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-
-                                    <View style={styles.statusButtonsContainer}>
-                                        <View style={styles.statusButtonsRow}>
-                                            <TouchableOpacity
-                                                style={[styles.statusButton, styles.delayButton]}
-                                                onPress={() => handleCurrentStatus('delay', item.orderId)}
-                                            >
-                                                <Text style={styles.statusButtonText}>
-                                                    <Icon size={18} color="white" name="clock-outline" /> Delay
-                                                </Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={[styles.statusButton, styles.attemptButton]}
-                                                onPress={() => handleCurrentStatus('attempt', item.orderId)}
-                                            >
-                                                <Text style={styles.statusButtonText}>
-                                                    <Icon size={18} color="white" name="refresh" /> Attempt
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </View>
-
-                                        <TouchableOpacity
-                                            style={[styles.completeButton]}
-                                            onPress={() => handleCompleteOrder(item)}
-                                        >
-                                            <Text style={styles.statusButtonText}>
-                                                <Icon size={18} color="white" name="check" /> Complete
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
+                            {/* Customer Info Section */}
+                            <View style={styles.customerSection}>
+                                <View style={styles.customerInfo}>
+                                    <Text style={styles.customerName}>{item.ord_customer_name}</Text>
+                                    <Text style={styles.customerPhone}>
+                                        <Icon name="phone" size={16} color="#666" /> {item.ord_customer_phone}
+                                    </Text>
+                                    <Text style={styles.boxCount}>
+                                        Boxes: <Text style={styles.boxNumber}>{item.no_boxes}</Text>
+                                    </Text>
+                                    <Text style={styles.DeliveryInstractions}>Delivery Instractions: {item.ord_contactless_delivery || 'No Instructions'}</Text>
+                                </View>
+                                <View style={styles.paymentBadge}>
+                                    <Icon size={24} color="#333" name="cash" />
+                                    <Text style={styles.paymentMethod}>
+                                        {item.ord_payment_method === 'Cash on Delivery' ? 'COD' : 'CARD'}
+                                    </Text>
                                 </View>
                             </View>
-                        ))}
+
+                            {/* Price Section */}
+                            <View style={styles.priceSection}>
+                                <Text style={styles.priceText}>AED {item.ord_grand_total}</Text>
+                            </View>
+
+                            {/* Action Buttons Row */}
+                            <View style={styles.actionButtonsRow}>
+                                <TouchableOpacity
+                                    style={[styles.iconButton, styles.callButton]}
+                                    onPress={() => Linking.openURL(`tel:${item.ord_customer_phone}`)}
+                                >
+                                    <Icon name="phone" size={24} color="white" />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[styles.iconButton, styles.whatsappButton]}
+                                    onPress={() => Linking.openURL(
+                                        `whatsapp://send?text=Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.&phone=+971${item.customer_phone}`
+                                    )}
+                                >
+                                    <Icon name="whatsapp" size={24} color="white" />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.delayButton]}
+                                    onPress={() => handleCurrentStatus('delay', item.orderId)}
+                                >
+                                    <Icon name="clock-outline" size={20} color="white" />
+                                    <Text style={styles.actionButtonText}>Delay</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.attemptButton]}
+                                    onPress={() => handleCurrentStatus('attempt', item.orderId)}
+                                >
+                                    <Icon name="refresh" size={20} color="white" />
+                                    <Text style={styles.actionButtonText}>Attempt</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Complete Button */}
+                            <TouchableOpacity
+                                style={styles.completeButton}
+                                onPress={() => handleCompleteOrder(item)}
+                            >
+                                <Icon name="check" size={24} color="white" />
+                                <Text style={styles.completeButtonText}>Complete Delivery</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
                 </View>
             </ScrollView>
         </View>
     );
 };
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#F5F7FA',
     },
-    bgrey: {
-        padding: 15,
-        paddingBottom: 0,
-        borderRadius: 20,
-    },
-    orders: {
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+    ordersList: {
         padding: 12,
-        marginBottom: 15,
-        marginTop: 15,
-        shadowColor: Colors.Greens_Black,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
+    },
+    orderCard: {
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 4,
     },
-    orderRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+    orderHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
     },
-    greenbox: {
+    orderIdContainer: {
         backgroundColor: '#E1C340',
-        height: 100,
-        width: 130,
-        borderRadius: 10,
-        padding: 8,
-        marginRight: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
     },
-    ordertxt: {
-        color: '#fff',
-        fontSize: 14,
-        textAlign: 'center',
-        marginTop: 4,
+    orderIdText: {
+        color: '#000',
+        fontSize: 16,
         fontWeight: 'bold',
     },
-    content_box: {
-        flex: 1,
-        paddingLeft: 8,
-        flexDirection: 'column',
-    },
-    viewmain: {
-        alignItems: 'flex-end',
-        marginBottom: 8,
+    bellIcon: {
+        marginLeft: 10,
     },
     viewButton: {
         backgroundColor: '#327F40',
-        height: 32,
-        width: 80,
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 16,
-        elevation: 2,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
     },
     viewButtonText: {
-        color: Colors.Greens_White,
+        color: 'white',
         fontWeight: '600',
     },
-    customerDetail: {
+    customerSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 16,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEE',
         width: '100%',
-        marginTop: 4,
+    },
+    customerInfo: {
+        flex: 1,
+        width: '100%',
     },
     customerName: {
-        color: Colors.Greens_Black,
-        fontSize: 16,
-        fontWeight: '500',
-        marginBottom: 2,
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 4,
+    },
+    DeliveryInstractions: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: '#333',
+        marginTop: 8,
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+        padding: 8,
+        borderRadius: 10,
+        width: '100%',
     },
     customerPhone: {
-        color: Colors.Greens_Black,
-        fontSize: 14,
-        marginBottom: 2,
+        fontSize: 15,
+        color: '#666',
+        marginBottom: 4,
     },
     boxCount: {
-        color: Colors.Greens_Black,
         fontSize: 14,
+        color: '#666',
     },
-    textBox: {
-        fontSize: 23,
-        fontWeight: '600',
-        color: Colors.Greens_Black,
+    boxNumber: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#333',
     },
-    payment: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        marginTop: 12,
-        flexDirection: "row",
-        padding: 5,
+    paymentBadge: {
+        backgroundColor: '#F8F9FA',
+        padding: 10,
+        borderRadius: 8,
+        flexDirection: 'row',
         alignItems: 'center',
+        marginLeft: 12,
     },
-    payment_content: {
-        marginLeft: 5,
-        flex: 1,
-    },
-    typtxt: {
-        fontSize: 12,
+    paymentMethod: {
+        marginLeft: 6,
+        fontWeight: '800',
         color: '#c61116',
-        fontWeight: "600",
     },
-    actionRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 12,
+    priceSection: {
+        marginBottom: 16,
+    },
+    priceText: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#333',
+    },
+    actionButtonsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 4,
+        marginBottom: 16,
+        width: "100%",
+    },
+    iconButton: {
+        width: 45,
+        height: 45,
+        borderRadius: 8,
+        justifyContent: 'center',
         alignItems: 'center',
     },
-    priceContainer: {
+    actionButton: {
         flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        gap: 6,
     },
-    orderPrice: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: Colors.Greens_Black,
+    callButton: {
+        backgroundColor: '#22C55E',
     },
-    statusButtonCall: {
-        backgroundColor: 'green',
-        width: 100,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 10,
-        padding: 10,
-        height: 40,
-        marginHorizontal: 4,
-    },
-    statusButtonWhats: {
+    whatsappButton: {
         backgroundColor: '#128C7E',
-        width: 100,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 10,
-        padding: 10,
-        height: 40,
-        marginHorizontal: 4,
-    },
-    statusButtonText: {
-        fontWeight: "600",
-        fontSize: 16,
-        color: '#fff',
-    },
-    // New styles for status buttons
-    statusButtonsContainer: {
-        marginTop: 12,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#eee',
-    },
-    statusButtonsRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 8,
-        paddingHorizontal: 20, // Added padding to give space on sides
-    },
-    statusButton: {
-        width: 120, // Increased fixed width
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 10,
-        padding: 10,
-        height: 40,
-        marginLeft: 2,
-
     },
     delayButton: {
-        backgroundColor: '#FFA500',
+        backgroundColor: '#F59E0B',
+        // width: "50",
+
     },
     attemptButton: {
-        backgroundColor: '#4169E1',
+        backgroundColor: '#3B82F6',
+        // width: "100%",
+    },
+    actionButtonText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 15,
     },
     completeButton: {
-        backgroundColor: '#32CD32',
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 10,
-        padding: 10,
-        height: 40,
+        backgroundColor: '#22C55E',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        borderRadius: 8,
+        gap: 8,
+        marginTop: 4,
+    },
+    completeButtonText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 16,
     },
 });
+
+
 
 export default OnGoingScreen;
