@@ -16,6 +16,7 @@ const OnGoingScreen = ({ navigation }) => {
     const [alertshow, setAlertshow] = useState(false);
     const [orderobject, setOrderobject] = useState(null);
     const [statusobject, setStatusobject] = useState('');
+    const [phoneNumbers, setPhoneNumbers] = useState({ phone1: "", phone2: "" });
 
     const getOngoingOrders = async () => {
         try {
@@ -110,6 +111,18 @@ const OnGoingScreen = ({ navigation }) => {
         }
     };
 
+    const handleCallPress = (phone1, phone2) => {
+        // Show the alert with both numbers
+        setAlertshow(true);
+        setPhoneNumbers({ phone1, phone2 });
+    };
+
+    const handleNumberSelect = (phone) => {
+        // Close the alert and call the selected phone number
+        Linking.openURL(`tel:${phone}`);
+        setAlertshow(false);
+    };
+
     return (
         <View style={styles.container}>
             <SCLAlert
@@ -122,6 +135,40 @@ const OnGoingScreen = ({ navigation }) => {
             >
                 <SCLAlertButton theme="success" onPress={setStatus}>YES</SCLAlertButton>
                 <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
+            </SCLAlert>
+
+            {/* number select alert */}
+
+
+            <SCLAlert
+                theme="warning"
+                show={alertshow}
+                cancellable={true}
+                onRequestClose={handleStatusClose}
+                title="Choose a number "
+                subtitle="Please choose one of the numbers below to call"
+            >
+                <View style={styles.phoneNumberContainer}>
+                    {/* Display phone1 with label */}
+                    <Text style={styles.phoneLabel}>Mobile Number:</Text>
+                    <Text style={styles.phoneNumber} onPress={() => handleNumberSelect(phoneNumbers.phone1)}>
+                        {phoneNumbers?.phone1}
+                    </Text>
+                </View>
+
+                {/* Conditionally display the alternative number if it exists */}
+                {phoneNumbers?.phone2 && (
+                    <View style={styles.phoneNumberContainer}>
+                        <Text style={styles.phoneLabel}>Alt Mobile Number:</Text>
+                        <Text style={styles.phoneNumber} onPress={() => handleNumberSelect(phoneNumbers.phone2)}>
+                            {phoneNumbers?.phone2}
+                        </Text>
+                    </View>
+                )}
+
+                <SCLAlertButton theme="danger" onPress={handleStatusClose}>
+                    Cancel
+                </SCLAlertButton>
             </SCLAlert>
 
             <ScrollView>
@@ -177,7 +224,7 @@ const OnGoingScreen = ({ navigation }) => {
                             <View style={styles.actionButtonsRow}>
                                 <TouchableOpacity
                                     style={[styles.iconButton, styles.callButton]}
-                                    onPress={() => Linking.openURL(`tel:${item.ord_customer_phone}`)}
+                                    onPress={() => handleCallPress(item.ord_customer_phone, item?.ord_delivery_address?.alternate_mobile_number)}
                                 >
                                     <Icon name="phone" size={24} color="white" />
                                 </TouchableOpacity>
@@ -406,6 +453,24 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '600',
         fontSize: 16,
+    },
+
+    phoneNumberContainer: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        width: "100%",
+
+    },
+    phoneLabel: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#333',
+    },
+    phoneNumber: {
+        fontSize: 18,
+        marginLeft: 5,
+        color: '#007bff',
+        textDecorationLine: 'underline',
     },
 });
 
