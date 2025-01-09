@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, ImageB
 import { Colors } from "../constants";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../instance/axios-instance";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from '../providers/AuthProvider';
 import { showMessage } from "react-native-flash-message";
@@ -130,7 +131,7 @@ const DeliveryReturn = ({ navigation }) => {
                                     <Text style={styles.detailText}>
                                         Product Name: {item.prd_name}
                                     </Text>
-                                    <Text style={styles.detailText}>
+                                    <Text style={styles.replaceQty}>
                                         {item.order_type === 'replace'
                                             ? `Replace Quantity: ${item?.return_qty}`
                                             : item.order_type === 'return'
@@ -247,6 +248,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 5,
+    },
+    replaceQty: {
+        color: Colors.Greens_Black,
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 3,
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+        padding: 5,
+        borderRadius: 10
     },
     cardFooter: {
         flexDirection: 'row',

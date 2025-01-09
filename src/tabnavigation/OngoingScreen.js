@@ -11,6 +11,7 @@ import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert';
 
 const OnGoingScreen = ({ navigation }) => {
     const [ongoingorders, setOngoingorders] = useState([]);
+    console.log('ongoingorders: ', ongoingorders);
     const { setSpinner, checkLoggin, user } = useContext(AuthContext);
     const [alertshow, setAlertshow] = useState(false);
     const [orderobject, setOrderobject] = useState(null);
@@ -130,12 +131,14 @@ const OnGoingScreen = ({ navigation }) => {
                             {/* Header Section */}
                             <View style={styles.orderHeader}>
                                 <View style={styles.orderIdContainer}>
-                                    <Text style={styles.orderIdText}>
-                                        ORDER #{item.orderId}
-                                        {item.ord_contactless_delivery && (
-                                            <Icon size={20} color="#FF4444" name="bell-off" style={styles.bellIcon} />
-                                        )}
-                                    </Text>
+                                    <Text style={styles.orderIdText}>ORDER #{item.orderId}</Text>
+
+                                    {item.ord_contactless_delivery === "dont ring the bell" ? (
+                                        <Icon size={20} color="#FF4444" name="bell-off" style={styles.bellIcon} />
+                                    ) : null}
+                                    {item.ord_contactless_delivery && item.ord_contactless_delivery !== "dont ring the bell" ? (
+                                        <Icon size={20} color="#000000" name="clipboard-text-outline" style={styles.bellIcon} />
+                                    ) : null}
                                 </View>
                                 <TouchableOpacity
                                     style={styles.viewButton}
@@ -247,6 +250,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     orderIdContainer: {
+        flexDirection: 'row',
         backgroundColor: '#E1C340',
         paddingHorizontal: 12,
         paddingVertical: 6,
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     bellIcon: {
-        marginLeft: 10,
+        marginLeft: 8,
     },
     viewButton: {
         backgroundColor: '#327F40',
