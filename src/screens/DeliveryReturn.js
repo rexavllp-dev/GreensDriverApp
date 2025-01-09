@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, ImageBackground, Linking, Alert } from "react-native";
 import { Colors } from "../constants";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../instance/axios-instance";
-import { TouchableOpacity } from "react-native-gesture-handler";
+// import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from '../providers/AuthProvider';
 import { showMessage } from "react-native-flash-message";
@@ -75,6 +75,23 @@ const DeliveryReturn = ({ navigation }) => {
 
         return unsubscribe;
     }, [navigation, orderUpdated]);
+
+    const handleWhatsAppPress = (phone) => {
+        const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+
+        Linking.canOpenURL(url).then((supported) => {
+            if (supported) {
+                Linking.openURL(url);
+            } else {
+                Alert.alert('Error', 'WhatsApp is not installed on this device.');
+            }
+        }).catch((err) => console.error('An error occurred', err));
+    };
+
+    const handleCallPress = (phone) => {
+        Linking.openURL(`tel:${phone}`);
+    };
 
     return (
         <View style={styles.container}>
@@ -159,6 +176,20 @@ const DeliveryReturn = ({ navigation }) => {
                                     >
                                         {item.order_type.toUpperCase()}
                                     </Text>
+                                    <TouchableOpacity
+                                        style={styles.callButton}
+                                        onPress={() => handleCallPress(item?.ord_customer_phone)}
+                                    >
+                                        <Icon size={20} color="#fff" name="phone" />
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.whatsappButton}
+                                        onPress={() => handleWhatsAppPress(item?.ord_customer_phone)}
+                                    >
+                                        <Icon size={20} color="#fff" name="whatsapp" />
+                                    </TouchableOpacity>
+
 
                                     <TouchableOpacity
                                         style={styles.statusButton}
@@ -267,8 +298,8 @@ const styles = StyleSheet.create({
     typeText: {
         color: '#fff',
         fontWeight: '600',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 8,
         borderRadius: 50,
         fontSize: 16,
     },
@@ -284,6 +315,21 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: "center",
         width: 100
+    },
+    whatsappButton: {
+        backgroundColor: "#25d366",
+        padding: 8,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 2,
+    },
+    callButton: {
+        backgroundColor: "#3b82f6",
+        padding: 8,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
     },
 });
 
