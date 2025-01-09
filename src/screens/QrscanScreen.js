@@ -13,6 +13,22 @@ const QrScan = ({ route, navigation }) => {
   const [scanner, setScanner] = useState(null);
   const [bottommsg, setBottommsg] = useState('');
 
+  const resetScanner = () => {
+    if (scanner) {
+      scanner.reactivate();
+      setBottommsg('You are not entered the payment amount or rv number please scan again'); 
+    }
+  };
+
+    // Listen for the custom event
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('resetScanner', () => {
+      resetScanner();
+    });
+
+    return unsubscribe;
+  }, [navigation, scanner]);
+
   const checkScannedStatus = async () => {
     try {
       console.log('checking ORDER ID ', route.params.order.orderId);
@@ -20,11 +36,15 @@ const QrScan = ({ route, navigation }) => {
       setSpinner(true);
 
       const token = await AsyncStorage.getItem('userSession');
-      const response = await axios.post(`driver/check_scanned/${route.params.order.orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `driver/check_scanned/${route.params.order.orderId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log('response qr', response.data);
 
@@ -34,6 +54,7 @@ const QrScan = ({ route, navigation }) => {
         navigation.navigate('cashpayment', {
           orderId: route.params.order.orderId,
           total: route.params.order.ord_grand_total,
+          onScanReset: resetScanner,
         });
       } else {
         setBottommsg(response.data.message);
@@ -74,20 +95,21 @@ const QrScan = ({ route, navigation }) => {
       );
 
       setBottommsg(response.data.message);
+      alert(response.data.message);
 
-
-      showMessage({
-        message: "",
-        description: response.data.message,
-        type: response.data.success ? 'success' : 'error',
-        fontStyle: { fontSize: 20 },
-      });
+      // showMessage({
+      //   message: "",
+      //   description: response.data.message,
+      //   type: response.data.success ? 'success' : 'error',
+      //   fontStyle: { fontSize: 20 },
+      // });
 
       if (response.data.success) {
         if (route.params.order.ord_payment_method === 'Cash on Delivery' && !route.params.order.ord_cash_received) {
           navigation.navigate('cashpayment', {
             orderId: route.params.order.orderId,
             total: route.params.order.ord_grand_total,
+            onScanReset: resetScanner,
           });
         } else {
           alert('Order completed successfully');
@@ -112,8 +134,14 @@ const QrScan = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+
     checkScannedStatus();
-    const unsubscribeFocus = navigation.addListener('focus', checkScannedStatus);
+
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      resetScanner();
+      checkScannedStatus();
+    });
+
     const unsubscribeTabPress = navigation.addListener('tabPress', checkScannedStatus);
 
     return () => {

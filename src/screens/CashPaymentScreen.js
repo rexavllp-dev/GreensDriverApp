@@ -1,15 +1,30 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, Button, ImageBackground } from "react-native";
 import { Colors } from "../constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "../instance/axios-instance";
 import { AuthContext } from "../providers/AuthProvider";
 import { showMessage } from "react-native-flash-message";
+import { useFocusEffect } from "@react-navigation/native";
 
 const CashPaymentScreen = ({ route, navigation }) => {
     const { setSpinner } = useContext(AuthContext);
     const [amount, setAmount] = useState("");
     const [rvnumber, setRvnumber] = useState("");
+
+    // Handle back button press
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+            // If we're going back, reset the scanner
+            if (e.data.action.type === 'GO_BACK') {
+                if (route.params?.onScanReset) {
+                    route.params.onScanReset();
+                }
+            }
+        });
+
+        return unsubscribe;
+    }, [navigation, route.params]);
 
     const handleCashReceived = async () => {
         try {
@@ -31,22 +46,12 @@ const CashPaymentScreen = ({ route, navigation }) => {
                 console.log("response cash received", response);
                 if (response.data.success) {
                     alert("Order has been marked as paid successfully");
-                    // showMessage({
-                    //     message: "Success",
-                    //     description: "cash received updated successfully",
-                    //     type: "success",
-                    // });
                     navigation.replace("orders"); // Navigate to the orders screen
                 } else {
                     alert(response.data.message);
                 }
             } else {
                 alert("Enter Amount / RV Number");
-                // showMessage({
-                //     message: "Error",
-                //     description: "Enter Amount / RV Number",
-                //     type: "danger",
-                // });
             }
         } catch (error) {
             console.error(error);
@@ -105,7 +110,7 @@ const styles = StyleSheet.create({
     overlay: {
         flex: 1,
         padding: 20,
-        backgroundColor: 'rgba(0,0,0,0.5)', // Adding semi-transparent overlay for better text visibility
+        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: "center",
     },
     title: {
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     totalHighlight: {
-        color: Colors.Greens_Green, // Highlight color for total
+        color: Colors.Greens_Green,
         fontWeight: "bold",
         fontSize: 24,
     },
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 20,
         color: "white",
-        backgroundColor: "rgba(255,255,255,0.1)", // Adding transparency to input
+        backgroundColor: "rgba(255,255,255,0.1)",
     },
 });
 

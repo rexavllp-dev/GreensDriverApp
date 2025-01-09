@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "../constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,6 +11,14 @@ const QrVerifyBox = ({ route, navigation }) => {
     const [bottomMessage, setBottomMessage] = useState("");
     const { setSpinner } = useContext(AuthContext);
     const scannerRef = useRef(null);
+    const isMounted = useRef(true); // Track component mount state
+
+    useEffect(() => {
+        // Update mount state on unmount
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     const onSuccess = async (e) => {
         setSpinner(true);
@@ -19,7 +27,6 @@ const QrVerifyBox = ({ route, navigation }) => {
 
         try {
             const token = await AsyncStorage.getItem("userSession");
-            // const userId = await AsyncStorage.getItem("userId");
 
             const response = await axios.post(
                 `driver/verify_qr_box/${route.params.orderId}`,
@@ -30,43 +37,46 @@ const QrVerifyBox = ({ route, navigation }) => {
                 }
             );
 
-            // console.log("response verify", response);
+            if (isMounted.current) {
+                setBottomMessage(response.data.message);
 
-
-            setBottomMessage(response.data.message);
-
-        
-
-            if (response.data.success) {
-                showMessage({
-                    message: "",
-                    description: response.data.message,
-                    type: "success",
-                    textStyle: { fontSize: 20, padding: 10 },
-                });
-                setTimeout(() => navigation.replace("verifyorders"), 1000);
-            } else {
-                showMessage({
-                    message: "",
-                    description: response.data.message,
-                    type: "error",
-                    textStyle: { fontSize: 20, padding: 10 },
-                });
+                if (response.data.success) {
+                    showMessage({
+                        message: "",
+                        description: response.data.message,
+                        type: "success",
+                        textStyle: { fontSize: 20, padding: 10 },
+                    });
+                    setTimeout(() => {
+                        if (isMounted.current) {
+                            navigation.replace("verifyorders");
+                        }
+                    }, 1000);
+                } else {
+                    showMessage({
+                        message: "",
+                        description: response.data.message,
+                        type: "error",
+                        textStyle: { fontSize: 20, padding: 10 },
+                    });
+                }
             }
 
             scannerRef.current?.reactivate();
         } catch (error) {
-            console.error(error);
-
-            setBottomMessage("Invalid QR code");
-            showMessage({
-                message: "",
-                description: "Invalid QR code",
-                type: "error",
-                textStyle: { fontSize: 20 },
-            });
+            if (isMounted.current) {
+                setBottomMessage("Invalid QR code");
+                showMessage({
+                    message: "",
+                    description: "Invalid QR code",
+                    type: "error",
+                    textStyle: { fontSize: 20 },
+                });
+            }
         } finally {
-            setSpinner(false);
+            if (isMounted.current) {
+                setSpinner(false);
+            }
         }
 
         return () => verifyController.abort();
