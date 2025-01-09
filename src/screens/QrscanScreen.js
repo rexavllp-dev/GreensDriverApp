@@ -75,6 +75,7 @@ const QrScan = ({ route, navigation }) => {
 
       setBottommsg(response.data.message);
 
+
       showMessage({
         message: "",
         description: response.data.message,
@@ -89,6 +90,7 @@ const QrScan = ({ route, navigation }) => {
             total: route.params.order.ord_grand_total,
           });
         } else {
+          alert('Order completed successfully');
           setTimeout(() => navigation.replace('orders'), 1000);
         }
       } else {

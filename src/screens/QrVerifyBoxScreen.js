@@ -30,20 +30,28 @@ const QrVerifyBox = ({ route, navigation }) => {
                 }
             );
 
-            console.log("response verify", response);
+            // console.log("response verify", response);
 
 
             setBottomMessage(response.data.message);
 
-            showMessage({
-                message: "",
-                description: response.data.message,
-                type: "warning",
-                textStyle: { fontSize: 20, padding: 10 },
-            });
+        
 
             if (response.data.success) {
+                showMessage({
+                    message: "",
+                    description: response.data.message,
+                    type: "success",
+                    textStyle: { fontSize: 20, padding: 10 },
+                });
                 setTimeout(() => navigation.replace("verifyorders"), 1000);
+            } else {
+                showMessage({
+                    message: "",
+                    description: response.data.message,
+                    type: "error",
+                    textStyle: { fontSize: 20, padding: 10 },
+                });
             }
 
             scannerRef.current?.reactivate();
