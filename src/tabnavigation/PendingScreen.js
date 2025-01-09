@@ -6,6 +6,7 @@ import {
     ScrollView,
     Linking,
     TouchableOpacity,
+    Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AuthContext } from "../providers/AuthProvider";
@@ -114,8 +115,18 @@ const PendingScreen = ({ navigation }) => {
     }, [navigation]);
 
     const handleWhatsAppPress = (phone) => {
-        Linking.openURL(`whatsapp://send?text=Hi, Greetings from greens&phone=+971${phone}`);
+        const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+
+        Linking.canOpenURL(url).then((supported) => {
+            if (supported) {
+                Linking.openURL(url);
+            } else {
+                Alert.alert('Error', 'WhatsApp is not installed on this device.');
+            }
+        }).catch((err) => console.error('An error occurred', err));
     };
+
 
     const handleCallPress = (phone) => {
         Linking.openURL(`tel:${phone}`);

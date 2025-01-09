@@ -6,6 +6,8 @@
 
     <queries>
       <package android:name="com.google.android.apps.maps" />
+          <!-- Add WhatsApp package query -->
+        <package android:name="com.whatsapp" />
     </queries>
     
     <application
