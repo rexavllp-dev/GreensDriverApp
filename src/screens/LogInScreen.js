@@ -119,7 +119,7 @@ const LogInScreen = ({ navigation }) => {
           <View style={styles.socialmediaSection}>
 
             <View style={styles.socialIcons}>
-              <Text style={{ color: Colors.Greens_Black }}>Please login to your account. v 1.9</Text>
+              <Text style={{ color: Colors.Greens_Black }}>Please login to your account. v 2.0</Text>
             </View>
 
           </View>
