@@ -13,6 +13,7 @@ const DeliveryReturn = ({ navigation }) => {
     const { setSpinner } = useContext(AuthContext);
     const [returnorders, setReturnOrders] = useState([]);
     const [alertshow, setAlertshow] = useState(false);
+    const [callAlertshow, setCallAlertshow] = useState(false);
     const [orderobject, setOrderobject] = useState([]);
     const [itemId, setItemId] = useState(null);
     const [orderUpdated, setOrderUpdated] = useState(0);
@@ -51,6 +52,7 @@ const DeliveryReturn = ({ navigation }) => {
 
     const handleStatusClose = () => {
         setAlertshow(false);
+        setCallAlertshow(false);
     };
 
     useEffect(() => {
@@ -92,14 +94,14 @@ const DeliveryReturn = ({ navigation }) => {
 
     const handleCallPress = (phone1, phone2) => {
         // Show the alert with both numbers
-        setAlertshow(true);
+        setCallAlertshow(true);
         setPhoneNumbers({ phone1, phone2 });
     };
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
         Linking.openURL(`tel:${phone}`);
-        setAlertshow(false);
+        setCallAlertshow(false);
     };
 
     return (
@@ -119,7 +121,7 @@ const DeliveryReturn = ({ navigation }) => {
 
             <SCLAlert
                 theme="warning"
-                show={alertshow}
+                show={callAlertshow}
                 cancellable={true}
                 onRequestClose={handleStatusClose}
                 title="Choose a number "
@@ -186,18 +188,19 @@ const DeliveryReturn = ({ navigation }) => {
                                     <Text style={styles.detailText}>
                                         Payment Method: {(item.ord_payment_method === 'Cash on Delivery') ? "COD" : 'Card'}
                                     </Text>
-                                    <Text style={styles.detailText}>
-                                        Product Name: {item.prd_name}
-                                    </Text>
-                                    <Text style={styles.replaceQty}>
-                                        {item.order_type === 'replace'
-                                            ? `Replace Quantity: ${item?.return_qty}`
-                                            : item.order_type === 'return'
-                                                ? `Return Quantity: ${item?.return_qty}`
-                                                : null}
-                                    </Text>
+                                    <View style={styles.detailSection}>
+                                        <Text style={styles.detailText}>
+                                            Product Name: {item.prd_name}
+                                        </Text>
+                                        <Text style={styles.replaceQty}>
+                                            {item.order_type === 'replace'
+                                                ? `Replace Quantity: ${item?.return_qty}`
+                                                : item.order_type === 'return'
+                                                    ? `Return Quantity: ${item?.return_qty}`
+                                                    : null}
+                                        </Text>
 
-
+                                    </View>
 
                                     {/* <Text style={styles.detailText}>Total: {item.ord_grand_total}</Text> */}
                                 </View>
@@ -321,28 +324,31 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 5,
     },
+    detailSection: {
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
+        padding: 5,
+        borderRadius: 8
+    },
     replaceQty: {
         color: Colors.Greens_Black,
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 3,
-        backgroundColor: 'rgba(0, 128, 0, 0.2)',
-        padding: 5,
-        borderRadius: 10
+
     },
     cardFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between', // Space between type and button
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 8,
     },
     typeText: {
         color: '#fff',
         fontWeight: '600',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
         borderRadius: 50,
-        fontSize: 16,
+        fontSize: 14,
     },
     statusButton: {
         backgroundColor: Colors.Greens_Green,

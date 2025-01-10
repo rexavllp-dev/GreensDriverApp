@@ -14,6 +14,7 @@ const OnGoingScreen = ({ navigation }) => {
     console.log('ongoingorders: ', ongoingorders);
     const { setSpinner, checkLoggin, user } = useContext(AuthContext);
     const [alertshow, setAlertshow] = useState(false);
+    const [callAlertshow, setCallAlertshow] = useState(false);
     const [orderobject, setOrderobject] = useState(null);
     const [statusobject, setStatusobject] = useState('');
     const [phoneNumbers, setPhoneNumbers] = useState({ phone1: "", phone2: "" });
@@ -66,6 +67,7 @@ const OnGoingScreen = ({ navigation }) => {
 
     const handleStatusClose = () => {
         setAlertshow(false);
+        setCallAlertshow(false);
     };
 
     const setStatus = async () => {
@@ -113,14 +115,14 @@ const OnGoingScreen = ({ navigation }) => {
 
     const handleCallPress = (phone1, phone2) => {
         // Show the alert with both numbers
-        setAlertshow(true);
+        setCallAlertshow(true);
         setPhoneNumbers({ phone1, phone2 });
     };
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
         Linking.openURL(`tel:${phone}`);
-        setAlertshow(false);
+        setCallAlertshow(false);
     };
 
     return (
@@ -138,11 +140,9 @@ const OnGoingScreen = ({ navigation }) => {
             </SCLAlert>
 
             {/* number select alert */}
-
-
             <SCLAlert
                 theme="warning"
-                show={alertshow}
+                show={callAlertshow}
                 cancellable={true}
                 onRequestClose={handleStatusClose}
                 title="Choose a number "
