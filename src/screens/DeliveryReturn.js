@@ -173,6 +173,7 @@ const DeliveryReturn = ({ navigation }) => {
                                         onPress={() => navigation.navigate('orderdetails', { order: { ...item, orderId: item.order_id } })}
                                     >
                                         <Icon size={18} color="white" name="eye" />
+                                        <Text style={styles.viewButtonText}>View</Text>
                                     </TouchableOpacity>
                                 </View>
 
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
         left: 30,
     },
     ordersContainer: {
-        padding: 10,
+        padding: 8,
     },
     orderCard: {
         backgroundColor: '#fff',
@@ -296,16 +297,19 @@ const styles = StyleSheet.create({
     },
     highlightText: {
         fontWeight: '700',
-        fontSize: 20,
+        fontSize: 18,
         color: Colors.Greens_Black,
+        backgroundColor: '#E1C340',
+        padding: 5,
+        borderRadius: 6
     },
     viewButton: {
-        backgroundColor: '#327F40',
-        height: 30,
-        width: 30,
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 50,
+        backgroundColor: Colors.Greens_Green,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 6,
     },
     noOrdersText: {
         fontSize: 18,
@@ -320,7 +324,7 @@ const styles = StyleSheet.create({
     },
     detailText: {
         color: Colors.Greens_Black,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
         marginBottom: 5,
     },
@@ -394,6 +398,12 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         color: '#007bff',
         textDecorationLine: 'underline',
+    },
+    viewButtonText: {
+        marginLeft: 5,
+        color: Colors.Greens_White,
+        fontSize: 14,
+        fontWeight: "bold",
     },
 });
 

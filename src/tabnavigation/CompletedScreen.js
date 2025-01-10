@@ -158,12 +158,12 @@ const styles = StyleSheet.create({
 
     },
     headerText: {
-        fontSize: 22,
+        fontSize: 16,
         color: Colors.Greens_White,
         fontWeight: "bold",
     },
     filterIcon: {
-        padding: 10,
+        padding: 4,
         backgroundColor: Colors.Greens_Red,
         borderRadius: 8,
     },
@@ -191,6 +191,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: Colors.Greens_Black,
+        backgroundColor: '#E1C340',
+        padding: 5,
+        borderRadius: 6
     },
     customerName: {
         fontSize: 16,
@@ -213,6 +216,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 5,
         color: Colors.Greens_Red,
+        fontWeight: "bold",
     },
     viewButton: {
         flexDirection: "row",
