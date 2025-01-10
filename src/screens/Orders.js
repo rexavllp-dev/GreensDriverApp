@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'flex-end',
         padding: 20,
+        // height:250
     },
     userGreeting: {
         paddingBottom: 40,
