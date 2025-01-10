@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
         left: 30,
     },
     ordersContainer: {
-        padding: 15,
+        padding: 10,
     },
     orderCard: {
         backgroundColor: '#fff',
