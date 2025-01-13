@@ -356,9 +356,12 @@ const styles = StyleSheet.create({
         color: '#333',
         marginTop: 8,
         backgroundColor: 'rgba(0, 128, 0, 0.2)',
+        boxshdow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         padding: 8,
         borderRadius: 10,
         width: '100%',
+        borderwidth: 1,
+        bordercolor: 'red',
     },
     customerPhone: {
         fontSize: 15,

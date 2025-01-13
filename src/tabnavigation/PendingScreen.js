@@ -153,12 +153,14 @@ const PendingScreen = ({ navigation }) => {
     const renderOrderItem = (item) => (
         <View key={item.orderId} index={item.orderId} style={styles.card}>
             <View style={styles.cardHeader}>
-                <Text style={styles.orderIdText}>Order ID: #{item.orderId}</Text>
+                <View style={styles.orderIdContainer}>
+                    <Text style={styles.orderIdText}>ORDER #{item.orderId}</Text>
+                </View>
                 <View style={styles.paymentMethod}>
-                    <Icon size={24} color="#0f766e" name="cash" />
+                    <Icon size={24} color="#333" name="cash" />
                     <Text style={styles.paymentText}>
                         {item.ord_payment_method === "Cash on Delivery"
-                            ? item.ord_payment_method
+                            ? "COD"
                             : "Card Payment"}
                     </Text>
                 </View>
@@ -271,19 +273,35 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginBottom: 12,
     },
+    orderIdContainer: {
+        backgroundColor: '#E1C340',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 8,
+        // paddingVertical: 2,
+        borderRadius: 8,
+    },
     orderIdText: {
+
         fontSize: 16,
         fontWeight: "bold",
-        color: "#374151",
+        color: "black",
+
     },
     paymentMethod: {
-        flexDirection: "row",
-        alignItems: "center",
+        backgroundColor: '#F8F9FA',
+        padding: 10,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 12,
     },
     paymentText: {
         marginLeft: 8,
-        color: "#0f766e",
+        color: '#c61116',
         fontSize: 14,
+        fontWeight: "bold",
     },
     cardBody: {
         marginBottom: 12,
@@ -299,11 +317,13 @@ const styles = StyleSheet.create({
     },
     bold: {
         fontWeight: "bold",
+        color: "black",
+        fontSize: 18,
     },
     price: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "bold",
-        color: "#0f766e",
+        color: "black",
         marginTop: 8,
     },
     cardFooter: {
@@ -317,6 +337,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginRight: 8,
     },
+
     primaryButtonText: {
         color: "#fff",
         fontWeight: "bold",

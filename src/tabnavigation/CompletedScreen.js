@@ -110,7 +110,7 @@ const CompletedScreen = ({ navigation }) => {
                     completedOrders.map((item) => (
                         <View key={item.orderId} index={item.orderId} style={styles.orderCard}>
                             <View style={styles.orderHeader}>
-                                <Text style={styles.orderId}>Order #{item.orderId}</Text>
+                                <Text style={styles.orderId}>ORDER #{item.orderId}</Text>
                                 <TouchableOpacity
                                     style={styles.viewButton}
                                     onPress={() => navigation.navigate("orderdetails", { order: item })}
@@ -207,13 +207,13 @@ const styles = StyleSheet.create({
         color: Colors.Greens_Black,
     },
     orderTotal: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "bold",
         marginTop: 10,
-        color: Colors.dark_red,
+        color: Colors.Greens_Black,
     },
     paymentMethod: {
-        fontSize: 14,
+        fontSize: 16,
         marginTop: 5,
         color: Colors.Greens_Red,
         fontWeight: "bold",
