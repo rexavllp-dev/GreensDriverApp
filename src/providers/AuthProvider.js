@@ -34,6 +34,8 @@ export const AuthProvider = ({ children }) => {
         await AsyncStorage.setItem('userSession', response.data.result.token);
         await AsyncStorage.setItem('userDetails', JSON.stringify(response.data.result.user.usr_firstname));
         await AsyncStorage.setItem('userId', JSON.stringify(response.data.result.user.id));
+        await AsyncStorage.setItem('email', JSON.stringify(email));
+        await AsyncStorage.setItem('password', JSON.stringify(password));
       } else {
         alert(response.data.message);
         // showMessage({

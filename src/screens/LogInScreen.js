@@ -4,8 +4,9 @@ import { Colors, Images } from "../constants";
 import Feather from "react-native-vector-icons/Feather";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { AuthContext } from '../providers/AuthProvider';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// import ViewSlider from 'react-native-view-slider';
 
-import ViewSlider from 'react-native-view-slider';
 
 const backgroundImage = require("../Images/bg-grn.jpg");
 
@@ -18,6 +19,21 @@ const LogInScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const { signin } = useContext(AuthContext);
+
+
+  useEffect(() => {
+   
+    const loadStoredCredentials = async () => {
+      const storedEmail = await AsyncStorage.getItem("email");
+      console.log('storedEmail: ', storedEmail);
+      const storedPassword = await AsyncStorage.getItem("password");
+      console.log('storedPassword: ', storedPassword);
+      if (storedEmail) setEmail(JSON.parse(storedEmail));
+      if (storedPassword) setPassword(JSON.parse(storedPassword));
+    };
+
+    loadStoredCredentials();
+  }, []);
 
 
   // Validation function
@@ -78,6 +94,7 @@ const LogInScreen = ({ navigation }) => {
 
               <TextInput
                 onChangeText={setEmail}
+                value={email}
                 placeholder="Username"
                 placeholderTextColor={Colors.Greens_White}
                 style={styles.inputText}
@@ -96,6 +113,7 @@ const LogInScreen = ({ navigation }) => {
 
               <TextInput
                 onChangeText={setPassword}
+                value={password}
                 placeholder="Password"
                 placeholderTextColor={Colors.Greens_White}
                 style={styles.inputText} />

@@ -95,6 +95,10 @@ const SwipeItem = () => {
                 setSpinner(true);
 
                 const token = await AsyncStorage.getItem('userSession');
+                const password = await AsyncStorage.getItem('password');
+                console.log('password: ', password);
+                
+
                 // console.log("token", token);
                 if (!token) {
                     throw new Error("User session token not found");
