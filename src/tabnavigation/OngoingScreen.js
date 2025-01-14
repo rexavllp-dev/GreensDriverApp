@@ -104,7 +104,13 @@ const OnGoingScreen = ({ navigation }) => {
             });
 
             if (response.data.success) {
-                alert(successMessage);
+                // alert(successMessage);
+                showMessage({
+                    message: "",
+                    description: successMessage,
+                    type: "success",
+                    textStyle: { fontSize: 16, padding: 10 },
+                });
                 getOngoingOrders();
             }
         } catch (error) {
