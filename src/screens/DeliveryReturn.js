@@ -232,7 +232,8 @@ const DeliveryReturn = ({ navigation }) => {
                                         style={styles.whatsappButton}
                                         onPress={() => handleWhatsAppPress(item?.ord_customer_phone)}
                                     >
-                                        <Icon size={20} color="#fff" name="whatsapp" />
+                                        <Icon size={20} color="#fff" name="whatsapp" /> 
+                
                                     </TouchableOpacity>
 
 

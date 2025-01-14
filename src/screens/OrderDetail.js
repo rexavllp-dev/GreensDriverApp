@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
     itemQty: {
         fontSize: 14,
         width: 50,
+        height: 30,
         color: Colors.Greens_White,
         backgroundColor: Colors.Greens_Green,
         fontWeight: '500',
