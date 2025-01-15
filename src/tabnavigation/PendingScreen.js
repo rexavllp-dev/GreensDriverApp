@@ -27,7 +27,7 @@ const PendingScreen = ({ navigation }) => {
     const { setSpinner, checkLoggin, setPendingcount, setOnGoingCount } = useContext(AuthContext);
 
     const setStatus = async (order) => {
-        console.log("checking order", order);
+        // console.log("checking order", order);
         try {
             setState((prev) => ({ ...prev, alertShow: false }));
             setSpinner(true);
@@ -46,16 +46,17 @@ const PendingScreen = ({ navigation }) => {
             // setPendingcount(response.data.result.length);
             setSpinner(false);
             if (response.data.success) {
-                alert("Order has been moved to Ongoing Tab");
+                // alert("Order has been moved to Ongoing Tab");
+                showMessage({
+                    message: "",
+                    description: "Order has been moved to Ongoing Tab",
+                    type: "success",
+                    textStyle: { fontSize: 16, padding: 10 },
+                });
                 getPendingOrders();
                 getOngoingOrders();
             }
-            // showMessage({
-            //     message: "",
-            //     description: "Order has been moved to Ongoing Tab",
-            //     type: "success",
-            //     textStyle: { fontSize: 16, padding: 10 },
-            // });
+
 
         } catch (error) {
             setSpinner(false);
