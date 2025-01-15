@@ -10,7 +10,7 @@ import { showMessage } from "react-native-flash-message";
 import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert';
 
 const DeliveryReturn = ({ navigation }) => {
-    const { setSpinner } = useContext(AuthContext);
+    const { setSpinner, setDeliveryReturnCount, checkLoggin, } = useContext(AuthContext);
     const [returnorders, setReturnOrders] = useState([]);
     const [alertshow, setAlertshow] = useState(false);
     const [callAlertshow, setCallAlertshow] = useState(false);
@@ -20,8 +20,8 @@ const DeliveryReturn = ({ navigation }) => {
     const [phoneNumbers, setPhoneNumbers] = useState({ phone1: "", phone2: "" });
 
     const setStatus = async (order) => {
-        console.log('order: ', order);
-
+        // console.log('order: ', order);
+        checkLoggin();
         setAlertshow(false);
         setSpinner(true);
         try {
@@ -58,6 +58,7 @@ const DeliveryReturn = ({ navigation }) => {
     useEffect(() => {
         const getReturnOrders = async () => {
             try {
+                checkLoggin();
                 setSpinner(true);
                 const token = await AsyncStorage.getItem('userSession');
                 const response = await axios.get('driver/get_returned_replaced_orders', {
@@ -66,6 +67,7 @@ const DeliveryReturn = ({ navigation }) => {
                     },
                 });
                 setReturnOrders(response.data.result);
+                setDeliveryReturnCount(response.data.result.length);
             } catch (error) {
                 console.error('Error fetching return orders:', error);
             } finally {
@@ -77,7 +79,7 @@ const DeliveryReturn = ({ navigation }) => {
         const unsubscribe = navigation.addListener('tabPress', getReturnOrders);
 
         return unsubscribe;
-    }, [navigation, orderUpdated]);
+    }, [navigation, orderUpdated, setDeliveryReturnCount]);
 
     const handleWhatsAppPress = (phone) => {
         const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
@@ -232,8 +234,8 @@ const DeliveryReturn = ({ navigation }) => {
                                         style={styles.whatsappButton}
                                         onPress={() => handleWhatsAppPress(item?.ord_customer_phone)}
                                     >
-                                        <Icon size={20} color="#fff" name="whatsapp" /> 
-                
+                                        <Icon size={20} color="#fff" name="whatsapp" />
+
                                     </TouchableOpacity>
 
 
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 18,
         color: Colors.Greens_Black,
-        backgroundColor: '#E1C340',
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
         padding: 5,
         borderRadius: 6
     },

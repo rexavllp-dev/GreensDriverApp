@@ -11,8 +11,8 @@ import { SCLAlert, SCLAlertButton } from 'react-native-scl-alert';
 
 const OnGoingScreen = ({ navigation }) => {
     const [ongoingorders, setOngoingorders] = useState([]);
-    console.log('ongoingorders: ', ongoingorders);
-    const { setSpinner, checkLoggin, user } = useContext(AuthContext);
+    // console.log('ongoingorders: ', ongoingorders);
+    const { setSpinner, checkLoggin, user, setOnGoingCount } = useContext(AuthContext);
     const [alertshow, setAlertshow] = useState(false);
     const [callAlertshow, setCallAlertshow] = useState(false);
     const [orderobject, setOrderobject] = useState(null);
@@ -30,6 +30,7 @@ const OnGoingScreen = ({ navigation }) => {
                 },
             });
             setOngoingorders(response.data.result);
+            setOnGoingCount(response.data.result.length);
         } catch (error) {
             console.error(error);
         } finally {
@@ -51,7 +52,7 @@ const OnGoingScreen = ({ navigation }) => {
             unsubscribeFocus();
             unsubscribeTabPress();
         };
-    }, [navigation]);
+    }, [navigation, setOnGoingCount]);
 
     const handleCurrentStatus = (status, order) => {
         setOrderobject(order);
@@ -205,7 +206,9 @@ const OnGoingScreen = ({ navigation }) => {
                                     <Text style={styles.boxCount}>
                                         Boxes: <Text style={styles.boxNumber}>{item.no_boxes}</Text>
                                     </Text>
-                                    <Text style={styles.DeliveryInstractions}>Delivery Instractions: {item.ord_contactless_delivery || 'No Instructions'}</Text>
+                                    <View style={styles.deliveryInstructions}>
+                                        <Text style={styles.deliveryText}>Delivery Instructions: {item.ord_contactless_delivery || 'No Instructions'}</Text>
+                                    </View >
                                 </View>
                                 <View style={styles.paymentBadge}>
                                     <Icon size={24} color="#333" name="cash" />
@@ -307,7 +310,7 @@ const styles = StyleSheet.create({
     },
     orderIdContainer: {
         flexDirection: 'row',
-        backgroundColor: '#E1C340',
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 8,
@@ -350,18 +353,19 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 4,
     },
-    DeliveryInstractions: {
-        fontSize: 14,
-        fontWeight: '800',
-        color: '#333',
+    deliveryInstructions: {
         marginTop: 8,
         backgroundColor: 'rgba(0, 128, 0, 0.2)',
         boxshdow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         padding: 8,
         borderRadius: 10,
         width: '100%',
-        borderwidth: 1,
-        bordercolor: 'red',
+    },
+    deliveryText: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: '#333',
+
     },
     customerPhone: {
         fontSize: 15,

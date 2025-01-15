@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, ScrollView, Image, Dimensions } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Feather from "react-native-vector-icons/Feather";
 import { AuthContext } from '../providers/AuthProvider';
@@ -7,6 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "../instance/axios-instance";
 import { Colors } from '../constants';
 
+
+const { width } = Dimensions.get('window'); // Get screen width
 const OrderDetail = ({ route, navigation }) => {
     console.log('route: ', route);
 
@@ -112,6 +114,9 @@ const OrderDetail = ({ route, navigation }) => {
                             <Text style={[styles.text, { backgroundColor: '#CCFFCC', padding: 5, borderRadius: 5, fontWeight: 'bold' }]}>
                                 <Text style={styles.label}>Delivery Instructions:</Text> {orderDetails.contactless_delivery || 'No Instructions'}
                             </Text>
+                            <Text style={[styles.text, { fontWeight: 'bold' }]} >
+                                <Text style={styles.label}>Delivery Remarks:</Text> {orderDetails.ord_delivery_comments || 'Nil'}
+                            </Text>
                         </>
                     ) : (
                         <Text>Loading Order Details...</Text>
@@ -130,6 +135,7 @@ const OrderDetail = ({ route, navigation }) => {
                             <Text style={styles.text}><Text style={styles.label}>Phone:</Text> {orderDetails?.ord_customer_phone}</Text>
                             <Text style={styles.text}><Text style={styles.label}>Email:</Text> {orderDetails?.ord_customer_email}</Text>
                             <Text style={styles.text}><Text style={styles.label}>Alt Phone:</Text> {orderDetails?.ord_delivery_address?.alternate_mobile_number || 'Nil'}</Text>
+
                         </>
                     ) : (
                         <Text>Loading Order Details...</Text>
@@ -165,7 +171,7 @@ const OrderDetail = ({ route, navigation }) => {
                                 >
                                     <Text style={styles.itemText}>{item.prd_name}</Text>
                                     <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 5, marginRight: 2 }}>
-                                        <Text style={styles.itemQty}>{item.item_quantity}</Text>
+                                        <Text style={[styles.itemQty, width < 360 ? styles.itemQtySmall : styles.itemQtyLarge]}>{item.item_quantity}</Text>
                                         {label ? (
                                             <View style={[
                                                 styles.labelContainer,
@@ -188,14 +194,14 @@ const OrderDetail = ({ route, navigation }) => {
 
 
 
-                <View style={styles.card}>
+                {/* <View style={styles.card}>
                     <Text style={styles.sectionTitle}>
                         <Feather name="message-square" size={16} color={Colors.Greens_Green} /> Order Remarks
                     </Text>
                     {remarks.map((item) => (
                         <Text key={item.id} style={styles.text}><Text style={styles.label}>Remark:</Text> {item.admin_remarks}</Text>
                     ))}
-                </View>
+                </View> */}
             </ScrollView>
         </View>
     );
@@ -225,8 +231,8 @@ const styles = StyleSheet.create({
     },
     itemQty: {
         fontSize: 14,
-        width: 50,
-        height: 30,
+        // width: 50,
+        // height: 30,
         color: Colors.Greens_White,
         backgroundColor: Colors.Greens_Green,
         fontWeight: '500',
@@ -235,6 +241,17 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'center',
         marginBottom: 8
+    },
+
+    itemQtySmall: {
+        width: 40, // Adjust width for smaller screens
+        height: 30,
+        fontSize: 12,
+    },
+    itemQtyLarge: {
+        width: 50, // Default width
+        height: 35,
+        fontSize: 14,
     },
 
     labelContainer: {

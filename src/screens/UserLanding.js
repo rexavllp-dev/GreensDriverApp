@@ -6,14 +6,17 @@ import Feather from "react-native-vector-icons/Feather";
 import { AuthContext } from '../providers/AuthProvider';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "../instance/axios-instance";
 
 const UserLanding = ({ navigation }) => {
 
-    const { user, logout, checkLoggin } = useContext(AuthContext);
+    const { user, logout, checkLoggin, deliveryReturnCount, setDeliveryReturnCount } = useContext(AuthContext);
 
     useEffect(() => {
 
         checkLoggin();
+        getReturnOrders();
 
         const unsubscribe = NetInfo.addEventListener(state => {
 
@@ -26,6 +29,27 @@ const UserLanding = ({ navigation }) => {
         return () => { unsubscribe }
 
     }, []);
+
+    // update the delivery count 
+    const getReturnOrders = async () => {
+        try {
+            checkLoggin();
+            const token = await AsyncStorage.getItem('userSession');
+            const response = await axios.get('driver/get_returned_replaced_orders', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setDeliveryReturnCount(response.data.result.length);
+        } catch (error) {
+            console.error('Error fetching return orders:', error);
+        } finally {
+        }
+    };
+
+
+
+
 
 
     return (
@@ -60,6 +84,9 @@ const UserLanding = ({ navigation }) => {
 
                     <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('delivery_returns')} >
                         <Text style={styles.signinButtonText}>Delivery Returns</Text>
+                        <View style={styles.deliveryCountHolder}>
+                            <Text style={styles.deliveryCount}>{deliveryReturnCount}</Text>
+                        </View>
                     </TouchableOpacity>
 
 
@@ -108,6 +135,27 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
+    deliveryCountHolder: {
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center', // Ensures the text is centered vertically
+        right: 10,
+        top: 10,
+        width: 30, // Ensures it is perfectly round with equal width and height
+        height: 30,
+        backgroundColor: 'red',
+        borderRadius: 50, // Half of the width/height for a perfect circle
+
+    },
+    deliveryCount: {
+
+        color: '#fff',
+        textAlign: 'center', // Centers the text horizontally
+        fontSize: 14, // Adjust font size for a better fit
+
+    },
+
     inputText: {
         fontSize: 14,
         fontWeight: "300",

@@ -9,11 +9,14 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
-  console.log('user: ', user);
+  // console.log('user: ', user);
   const [unverifiedorders, setUnverifiedorders] = useState([]);
   const [spinner, setSpinner] = useState(false);
   const [loggedin, setLoggedin] = useState(null);
   const [pendingcount, setPendingcount] = useState(0);
+  const [onGoingCount, setOnGoingCount] = useState(0);
+  const [deliveryReturnCount, setDeliveryReturnCount] = useState(0);
+
 
 
 
@@ -26,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         device_name: DeviceInfo.getDeviceId(),
       });
 
-      console.log("response data", response.data);
+      // console.log("response data", response.data);
 
       if (response.data.success) {
         setUser(response.data.result.user);
@@ -116,9 +119,13 @@ export const AuthProvider = ({ children }) => {
         spinner,
         loggedin,
         pendingcount,
+        onGoingCount,
+        deliveryReturnCount,
         unverifiedorders,
         setLoggedin,
         setPendingcount,
+        setOnGoingCount,
+        setDeliveryReturnCount,
         setSpinner,
         signin,
         logout,

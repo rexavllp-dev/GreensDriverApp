@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: Colors.Greens_Black,
-        backgroundColor: '#E1C340',
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
         padding: 5,
         borderRadius: 6
     },

@@ -24,7 +24,7 @@ const PendingScreen = ({ navigation }) => {
 
     const [phoneNumbers, setPhoneNumbers] = useState({ phone1: "", phone2: "32423242" });
     const [alertshow, setAlertshow] = useState(false);
-    const { setSpinner, checkLoggin, setPendingcount } = useContext(AuthContext);
+    const { setSpinner, checkLoggin, setPendingcount, setOnGoingCount } = useContext(AuthContext);
 
     const setStatus = async (order) => {
         console.log("checking order", order);
@@ -48,6 +48,7 @@ const PendingScreen = ({ navigation }) => {
             if (response.data.success) {
                 alert("Order has been moved to Ongoing Tab");
                 getPendingOrders();
+                getOngoingOrders();
             }
             // showMessage({
             //     message: "",
@@ -59,6 +60,23 @@ const PendingScreen = ({ navigation }) => {
         } catch (error) {
             setSpinner(false);
             console.error("Error setting status:", error);
+        }
+    };
+
+    // to update the ongoing orders count in the header
+    const getOngoingOrders = async () => {
+        try {
+            checkLoggin();
+            const token = await AsyncStorage.getItem('userSession');
+            const response = await axios.get(`driver/get_out_for_delivery`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setOnGoingCount(response.data.result.length);
+        } catch (error) {
+            console.error(error);
+        } finally {
         }
     };
 
@@ -274,7 +292,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     orderIdContainer: {
-        backgroundColor: '#E1C340',
+        backgroundColor: 'rgba(0, 128, 0, 0.2)',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
