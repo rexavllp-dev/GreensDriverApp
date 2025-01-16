@@ -264,7 +264,13 @@ const PendingScreen = ({ navigation }) => {
                 </SCLAlertButton>
             </SCLAlert>
 
-            {state?.pendingOrders?.map(renderOrderItem)}
+            {state.pendingOrders.length > 0 ? (
+                state.pendingOrders.map(renderOrderItem)
+            ) : (
+                <View style={styles.noOrdersContainer}>
+                    <Text style={styles.noOrdersText}>No Pending Orders</Text>
+                </View>
+            )}
         </ScrollView>
 
 
@@ -393,6 +399,17 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         color: '#007bff',
         textDecorationLine: 'underline',
+    },
+    noOrdersContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 50,
+    },
+    noOrdersText: {
+        fontSize: 18,
+        color: "#6b7280",
+        fontWeight: "bold",
     },
 });
 

@@ -180,109 +180,117 @@ const OnGoingScreen = ({ navigation }) => {
 
             <ScrollView>
                 <View style={styles.ordersList}>
-                    {Array.isArray(ongoingorders) && ongoingorders.map((item) => (
-                        <View key={item.orderId} style={styles.orderCard}>
-                            {/* Header Section */}
-                            <View style={styles.orderHeader}>
-                                <View style={styles.orderIdContainer}>
-                                    <Text style={styles.orderIdText}>ORDER #{item.orderId}</Text>
 
-                                    {item.ord_contactless_delivery === "dont ring the bell" ? (
-                                        <Icon size={20} color="#FF4444" name="bell-off" style={styles.bellIcon} />
-                                    ) : null}
-                                    {item.ord_contactless_delivery && item.ord_contactless_delivery !== "dont ring the bell" ? (
-                                        <Icon size={20} color="#000000" name="clipboard-text-outline" style={styles.bellIcon} />
-                                    ) : null}
+                    {Array.isArray(ongoingorders) && ongoingorders.length > 0 ? (
+
+                        ongoingorders.map((item) => (
+                            <View key={item.orderId} style={styles.orderCard}>
+                                {/* Header Section */}
+                                <View style={styles.orderHeader}>
+                                    <View style={styles.orderIdContainer}>
+                                        <Text style={styles.orderIdText}>ORDER #{item.orderId}</Text>
+
+                                        {item.ord_contactless_delivery === "dont ring the bell" ? (
+                                            <Icon size={20} color="#FF4444" name="bell-off" style={styles.bellIcon} />
+                                        ) : null}
+                                        {item.ord_contactless_delivery && item.ord_contactless_delivery !== "dont ring the bell" ? (
+                                            <Icon size={20} color="#000000" name="clipboard-text-outline" style={styles.bellIcon} />
+                                        ) : null}
+                                    </View>
+                                    <TouchableOpacity
+                                        style={styles.viewButton}
+                                        onPress={() => navigation.navigate('orderdetails', { order: item })}
+                                    >
+                                        <Text style={styles.viewButtonText}>View Details</Text>
+                                    </TouchableOpacity>
                                 </View>
-                                <TouchableOpacity
-                                    style={styles.viewButton}
-                                    onPress={() => navigation.navigate('orderdetails', { order: item })}
-                                >
-                                    <Text style={styles.viewButtonText}>View Details</Text>
-                                </TouchableOpacity>
-                            </View>
 
-                            {/* Customer Info Section */}
-                            <View style={styles.customerSection}>
-                                <View style={styles.customerInfo}>
-                                    <Text style={styles.customerName}>{item.ord_customer_name}</Text>
-                                    <Text style={styles.customerPhone}>
-                                        <Icon name="phone" size={16} color="#666" /> {item.ord_customer_phone}
-                                    </Text>
-                                    <Text style={styles.boxCount}>
-                                        Boxes: <Text style={styles.boxNumber}>{item.no_boxes}</Text>
-                                    </Text>
-                                    <View style={styles.deliveryInstructions}>
-                                        <Text style={styles.deliveryText}>Delivery Instructions: {item.ord_contactless_delivery || 'No Instructions'}</Text>
-                                    </View >
+                                {/* Customer Info Section */}
+                                <View style={styles.customerSection}>
+                                    <View style={styles.customerInfo}>
+                                        <Text style={styles.customerName}>{item.ord_customer_name}</Text>
+                                        <Text style={styles.customerPhone}>
+                                            <Icon name="phone" size={16} color="#666" /> {item.ord_customer_phone}
+                                        </Text>
+                                        <Text style={styles.boxCount}>
+                                            Boxes: <Text style={styles.boxNumber}>{item.no_boxes}</Text>
+                                        </Text>
+                                        <View style={styles.deliveryInstructions}>
+                                            <Text style={styles.deliveryText}>Delivery Instructions: {item.ord_contactless_delivery || 'No Instructions'}</Text>
+                                        </View >
+                                    </View>
+                                    <View style={styles.paymentBadge}>
+                                        <Icon size={24} color="#333" name="cash" />
+                                        <Text style={styles.paymentMethod}>
+                                            {item.ord_payment_method === 'Cash on Delivery' ? 'COD' : 'CARD'}
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.paymentBadge}>
-                                    <Icon size={24} color="#333" name="cash" />
-                                    <Text style={styles.paymentMethod}>
-                                        {item.ord_payment_method === 'Cash on Delivery' ? 'COD' : 'CARD'}
-                                    </Text>
+
+                                {/* Price Section */}
+                                <View style={styles.priceSection}>
+                                    <Text style={styles.priceText}>AED {item.ord_grand_total}</Text>
                                 </View>
+
+                                {/* Action Buttons Row */}
+                                <View style={styles.actionButtonsRow}>
+                                    <TouchableOpacity
+                                        style={[styles.iconButton, styles.callButton]}
+                                        onPress={() => handleCallPress(item.ord_customer_phone, item?.ord_delivery_address?.alternate_mobile_number)}
+                                    >
+                                        <Icon name="phone" size={24} color="white" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.iconButton, styles.whatsappButton]}
+                                        onPress={() => {
+                                            const message = `Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+                                            const phone = `+971${item.ord_customer_phone}`;
+                                            const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phone}`;
+
+                                            Linking.canOpenURL(url).then((supported) => {
+                                                if (supported) {
+                                                    Linking.openURL(url);
+                                                } else {
+                                                    Alert.alert('Error', 'WhatsApp is not installed on this device.');
+                                                }
+                                            }).catch((err) => console.error('An error occurred', err));
+                                        }}
+                                    >
+                                        <Icon name="whatsapp" size={24} color="white" />
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.delayButton]}
+                                        onPress={() => handleCurrentStatus('delay', item.orderId)}
+                                    >
+                                        <Icon name="clock-outline" size={20} color="white" />
+                                        <Text style={styles.actionButtonText}>Delay</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.attemptButton]}
+                                        onPress={() => handleCurrentStatus('attempt', item.orderId)}
+                                    >
+                                        <Icon name="refresh" size={20} color="white" />
+                                        <Text style={styles.actionButtonText}>Attempt</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                {/* Complete Button */}
+                                <TouchableOpacity
+                                    style={styles.completeButton}
+                                    onPress={() => handleCompleteOrder(item)}
+                                >
+                                    <Icon name="check" size={24} color="white" />
+                                    <Text style={styles.completeButtonText}>Complete Delivery</Text>
+                                </TouchableOpacity>
                             </View>
-
-                            {/* Price Section */}
-                            <View style={styles.priceSection}>
-                                <Text style={styles.priceText}>AED {item.ord_grand_total}</Text>
-                            </View>
-
-                            {/* Action Buttons Row */}
-                            <View style={styles.actionButtonsRow}>
-                                <TouchableOpacity
-                                    style={[styles.iconButton, styles.callButton]}
-                                    onPress={() => handleCallPress(item.ord_customer_phone, item?.ord_delivery_address?.alternate_mobile_number)}
-                                >
-                                    <Icon name="phone" size={24} color="white" />
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.iconButton, styles.whatsappButton]}
-                                    onPress={() => {
-                                        const message = `Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-                                        const phone = `+971${item.ord_customer_phone}`;
-                                        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phone}`;
-
-                                        Linking.canOpenURL(url).then((supported) => {
-                                            if (supported) {
-                                                Linking.openURL(url);
-                                            } else {
-                                                Alert.alert('Error', 'WhatsApp is not installed on this device.');
-                                            }
-                                        }).catch((err) => console.error('An error occurred', err));
-                                    }}
-                                >
-                                    <Icon name="whatsapp" size={24} color="white" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.delayButton]}
-                                    onPress={() => handleCurrentStatus('delay', item.orderId)}
-                                >
-                                    <Icon name="clock-outline" size={20} color="white" />
-                                    <Text style={styles.actionButtonText}>Delay</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.attemptButton]}
-                                    onPress={() => handleCurrentStatus('attempt', item.orderId)}
-                                >
-                                    <Icon name="refresh" size={20} color="white" />
-                                    <Text style={styles.actionButtonText}>Attempt</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            {/* Complete Button */}
-                            <TouchableOpacity
-                                style={styles.completeButton}
-                                onPress={() => handleCompleteOrder(item)}
-                            >
-                                <Icon name="check" size={24} color="white" />
-                                <Text style={styles.completeButtonText}>Complete Delivery</Text>
-                            </TouchableOpacity>
+                        ))
+                    ) : (
+                        <View style={styles.noOrdersContainer}>
+                            <Text style={styles.noOrdersText}>No ongoing orders available.</Text>
                         </View>
-                    ))}
+                    )}
                 </View>
             </ScrollView>
         </View>
@@ -484,6 +492,17 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         color: '#007bff',
         textDecorationLine: 'underline',
+    },
+
+    noOrdersContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+    },
+    noOrdersText: {
+        fontSize: 16,
+        color: '#999',
+        textAlign: 'center',
     },
 });
 
