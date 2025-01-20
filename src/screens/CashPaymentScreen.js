@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, Button, ImageBackground } from "react-native";
+import { View, Text, TextInput, StyleSheet, Button, ImageBackground, TouchableOpacity } from "react-native";
 import { Colors } from "../constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "../instance/axios-instance";
@@ -110,7 +110,7 @@ const CashPaymentScreen = ({ route, navigation }) => {
             <View style={styles.overlay}>
                 <Text style={styles.title}>Cash On Delivery</Text>
                 <Text style={styles.subtitle}>
-                    Total: <Text style={styles.totalHighlight}>{route.params.total}</Text>
+                    Total: <Text style={styles.totalHighlight}>AED {route.params.total}</Text>
                 </Text>
 
                 <Text style={styles.label}>Amount</Text>
@@ -135,7 +135,15 @@ const CashPaymentScreen = ({ route, navigation }) => {
 
                 {rvnumberError ? <Text style={styles.errorText}>{rvnumberError}</Text> : null}
 
-                <Button title="Proceed" onPress={handleCashReceived} color={Colors.Greens_Green} style={styles.button} />
+                <TouchableOpacity
+                    onPress={handleCashReceived}
+                    style={styles.buttonContainer}
+                >
+                    <Text style={styles.button} >CASH RECIVED</Text >
+
+                </TouchableOpacity>
+
+
             </View>
         </ImageBackground>
     );
@@ -148,15 +156,21 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     button: {
-        padding: 10,
-        backgroundColor: Colors.Greens_Green,
-        borderRadius: 15,
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+        color: "white",
     },
     overlay: {
         flex: 1,
         padding: 20,
         backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: "center",
+    },
+    buttonContainer: {
+        backgroundColor: Colors.Greens_Green,
+        padding: 10,
+        borderRadius: 15,
     },
     title: {
         fontSize: 28,
@@ -194,7 +208,7 @@ const styles = StyleSheet.create({
         color: "red",
         fontSize: 14,
         marginTop: 0,
-        marginBottom: 8,
+        marginBottom: 5,
         fontWeight: "bold",
     },
 });

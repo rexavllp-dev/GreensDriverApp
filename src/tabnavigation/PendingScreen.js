@@ -33,7 +33,7 @@ const PendingScreen = ({ navigation }) => {
             setSpinner(true);
 
             const token = await AsyncStorage.getItem("userSession");
-            console.log("token", token);
+            // console.log("token", token);
             const userId = await AsyncStorage.getItem("userId");
 
             const response = await axios.put(`driver/update_out_for_delivery/${order}`, {

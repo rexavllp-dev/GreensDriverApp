@@ -86,12 +86,14 @@ const DeliveryReturn = ({ navigation }) => {
 
         // Customize the message based on the order type
         if (orderType === 'return') {
-            message = `Hi, this is your delivery driver from Greens International. I am on the way to pick up your return and will arrive soon?`;
+            message = `Hi, this is from Greens International.
+                        We will be collecting the return item(s) today. Please ensure they are ready for pickup.
+                        Thank you!`;
         } else if (orderType === 'replace') {
-            message = `Hi, this is your delivery driver from Greens International. I am on the way to deliver your replacement order and will arrive soon?`;
-        } else {
-            message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-        }
+            message = `Hi, this is from Greens International.
+                         We will be delivering the replacement item(s) today. Please ensure the return item(s) are ready for pickup.
+                        Thank you!`;
+        } 
 
         // const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
         const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
@@ -128,7 +130,7 @@ const DeliveryReturn = ({ navigation }) => {
                 cancellable={true}
                 onRequestClose={handleStatusClose}
                 title="Are your sure?"
-                subtitle="Press YES to confirm this order as collected"
+                subtitle="Press YES to confirm this order "
             >
                 <SCLAlertButton theme="success" onPress={() => setStatus(orderobject)}>YES</SCLAlertButton>
                 <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
@@ -261,7 +263,7 @@ const DeliveryReturn = ({ navigation }) => {
                                         }
                                         }
                                     >
-                                        <Text style={styles.statusButtonText}>{item.order_type === 'return' ? 'Return' : 'Replace'}</Text>
+                                        <Text style={styles.statusButtonText}>{item.order_type === 'return' ? 'Collected' : 'Replaced'}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
