@@ -141,7 +141,7 @@ const PendingScreen = ({ navigation }) => {
 
     const handleWhatsAppPress = (phone) => {
         const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+        const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
 
         Linking.canOpenURL(url).then((supported) => {
             if (supported) {
@@ -164,8 +164,10 @@ const PendingScreen = ({ navigation }) => {
     };
 
     const handleNumberSelect = (phone) => {
+        // Check if the phone number starts with '0' and trim it
+        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
         // Close the alert and call the selected phone number
-        Linking.openURL(`tel:${phone}`);
+        Linking.openURL(`tel:${trimmedPhone}`);
         setAlertshow(false);
     };
 

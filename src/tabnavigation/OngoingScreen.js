@@ -91,7 +91,7 @@ const OnGoingScreen = ({ navigation }) => {
                     break;
                 case 'complete':
                     // Navigate to `qrscan` without API request
-                    navigation.replace('qrscan', { order });
+                    navigation.navigate('qrscan', { order });
                     return;
                 default:
                     console.error('Unsupported status:', status);
@@ -128,7 +128,9 @@ const OnGoingScreen = ({ navigation }) => {
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
-        Linking.openURL(`tel:${phone}`);
+        // Check if the phone number starts with '0' and trim it
+        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
+        Linking.openURL(`tel:${trimmedPhone}`);
         setCallAlertshow(false);
     };
 
@@ -245,7 +247,7 @@ const OnGoingScreen = ({ navigation }) => {
                                         onPress={() => {
                                             const message = `Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
                                             const phone = `+971${item.ord_customer_phone}`;
-                                            const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=${phone}`;
+                                            const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
 
                                             Linking.canOpenURL(url).then((supported) => {
                                                 if (supported) {

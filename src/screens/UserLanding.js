@@ -11,12 +11,13 @@ import axios from "../instance/axios-instance";
 
 const UserLanding = ({ navigation }) => {
 
-    const { user, logout, checkLoggin, deliveryReturnCount, setDeliveryReturnCount } = useContext(AuthContext);
+    const { user, logout, checkLoggin, deliveryReturnCount, setDeliveryReturnCount, verifyCount, setVerifyCount } = useContext(AuthContext);
 
     useEffect(() => {
 
         checkLoggin();
         getReturnOrders();
+        verifyOrders();
 
         const unsubscribe = NetInfo.addEventListener(state => {
 
@@ -46,6 +47,37 @@ const UserLanding = ({ navigation }) => {
         } finally {
         }
     };
+
+    // update verify order count
+    const verifyOrders = async () => {
+        try {
+            checkLoggin();
+            const token = await AsyncStorage.getItem('userSession');
+            if (!token) {
+                throw new Error("User session token not found");
+            }
+            const userId = await AsyncStorage.getItem('userId');
+
+            const response = await axios.get(
+                `driver/driver_unverified_orders`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            if (response.data.success) {
+                setVerifyCount(response.data.result.length);
+            }
+
+        } catch (error) {
+            console.error("Error fetching unverified orders:", error.message);
+        } finally {
+        }
+    };
+
+
+
 
 
 
@@ -77,6 +109,9 @@ const UserLanding = ({ navigation }) => {
                 <View style={styles.Btnview}>
                     <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('verifyorders')} >
                         <Text style={styles.signinButtonText}>Verify Boxes</Text>
+                        <View style={styles.deliveryCountHolder}>
+                            <Text style={styles.deliveryCount}>{verifyCount}</Text>
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.signinButton} onPress={() => navigation.navigate('orders')} >
                         <Text style={styles.signinButtonText}>Delivery</Text>

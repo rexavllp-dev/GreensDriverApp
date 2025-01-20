@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [pendingcount, setPendingcount] = useState(0);
   const [onGoingCount, setOnGoingCount] = useState(0);
   const [deliveryReturnCount, setDeliveryReturnCount] = useState(0);
+  const [verifyCount, setVerifyCount] = useState(0);
 
 
 
@@ -120,11 +121,13 @@ export const AuthProvider = ({ children }) => {
         loggedin,
         pendingcount,
         onGoingCount,
+        verifyCount,
         deliveryReturnCount,
         unverifiedorders,
         setLoggedin,
         setPendingcount,
         setOnGoingCount,
+        setVerifyCount,
         setDeliveryReturnCount,
         setSpinner,
         signin,

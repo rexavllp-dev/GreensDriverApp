@@ -169,21 +169,28 @@ const OrderDetail = ({ route, navigation }) => {
                                     key={item.order_item_id}
                                     style={[styles.item, backgroundColor ? { backgroundColor, borderRadius: 10, padding: 5 } : null]}
                                 >
-                                    <Text style={styles.itemText}>{item.prd_name}</Text>
-                                    <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 5, marginRight: 2 }}>
-                                        <Text style={[styles.itemQty, width < 360 ? styles.itemQtySmall : styles.itemQtyLarge]}>{item.item_quantity}</Text>
-                                        {label ? (
-                                            <View style={[
-                                                styles.labelContainer,
-                                                {
-                                                    backgroundColor: item.returnId && item.return_status === 3 ? '#FF6347' : '#32CD32', // Red for returns, Medium Green for replacements
-                                                    borderColor: item.returnId && item.return_status === 3 ? '#E74C3C' : '#228B22', // Darker shade for border
-                                                },
-                                            ]}>
-                                                <Text style={styles.labelText}>{label}</Text>
+                                    <View
+                                        style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 5 }}
+                                    >
+                                        <Text style={styles.itemText}>{item.prd_name}</Text>
+                                        <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 5, marginLeft: 3 }}>
+                                            <View style={styles.itemQtyContainer}>
+                                                <Text style={[styles.itemQty]}>{item.item_quantity}</Text>
                                             </View>
-                                        ) : null}
+
+                                        </View>
                                     </View>
+                                    {label ? (
+                                        <View style={[
+                                            styles.labelContainer,
+                                            {
+                                                backgroundColor: item.returnId && item.return_status === 3 ? '#FF6347' : '#32CD32', // Red for returns, Medium Green for replacements
+                                                borderColor: item.returnId && item.return_status === 3 ? '#E74C3C' : '#228B22', // Darker shade for border
+                                            },
+                                        ]}>
+                                            <Text style={styles.labelText}>{label}</Text>
+                                        </View>
+                                    ) : null}
                                 </View>
                             );
                         })
@@ -234,15 +241,18 @@ const styles = StyleSheet.create({
         // width: 50,
         // height: 30,
         color: Colors.Greens_White,
-        backgroundColor: Colors.Greens_Green,
         fontWeight: '500',
-        padding: 5,
-        borderRadius: 50,
-        flex: 1,
-        textAlign: 'center',
-        marginBottom: 8
     },
-
+    itemQtyContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.Greens_Green,
+        borderRadius: 50,
+        padding: 5,
+        width: 30,
+        height: 30,
+    },
     itemQtySmall: {
         width: 40, // Adjust width for smaller screens
         height: 30,
@@ -255,6 +265,7 @@ const styles = StyleSheet.create({
     },
 
     labelContainer: {
+        marginTop: 5,
         backgroundColor: '#FF6347', // Eye-catching Tomato Red
         paddingVertical: 3, // Reduced padding for compact badge style
         paddingHorizontal: 12, // Wider horizontal padding for better shape
@@ -275,10 +286,8 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5, // Slight spacing for better readability
     },
     item: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         paddingVertical: 10,
+        alignItems:'flex-start',
         borderBottomWidth: 1,
         borderBottomColor: Colors.Greens_LightGray,
         marginBottom: 5,

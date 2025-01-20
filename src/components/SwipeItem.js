@@ -84,7 +84,7 @@ const SwipeItem = () => {
 
     const navigation = useNavigation();
     const [unverifiedorders, setUnverifiedorders] = useState([]);
-    const { setSpinner, checkLoggin } = useContext(AuthContext);
+    const { setSpinner, checkLoggin, setVerifyCount } = useContext(AuthContext);
 
     useEffect(() => {
         const verifyController = new AbortController();
@@ -96,8 +96,7 @@ const SwipeItem = () => {
 
                 const token = await AsyncStorage.getItem('userSession');
                 const password = await AsyncStorage.getItem('password');
-                console.log('password: ', password);
-                
+
 
                 // console.log("token", token);
                 if (!token) {
@@ -120,6 +119,7 @@ const SwipeItem = () => {
 
                 if (response.data.success) {
                     setUnverifiedorders(response.data.result);
+                    setVerifyCount(response.data.result.length);
                 }
                 // console.log(unverifiedorders.map(order => order));
 

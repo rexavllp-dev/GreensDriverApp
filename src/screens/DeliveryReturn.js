@@ -81,17 +81,30 @@ const DeliveryReturn = ({ navigation }) => {
         return unsubscribe;
     }, [navigation, orderUpdated, setDeliveryReturnCount]);
 
-    const handleWhatsAppPress = (phone) => {
-        const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+    const handleWhatsAppPress = (phone, orderType) => {
+        let message;
 
-        Linking.canOpenURL(url).then((supported) => {
-            if (supported) {
-                Linking.openURL(url);
-            } else {
-                Alert.alert('Error', 'WhatsApp is not installed on this device.');
-            }
-        }).catch((err) => console.error('An error occurred', err));
+        // Customize the message based on the order type
+        if (orderType === 'return') {
+            message = `Hi, this is your delivery driver from Greens International. I am on the way to pick up your return and will arrive soon?`;
+        } else if (orderType === 'replace') {
+            message = `Hi, this is your delivery driver from Greens International. I am on the way to deliver your replacement order and will arrive soon?`;
+        } else {
+            message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+        }
+
+        // const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+        const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+
+        Linking.canOpenURL(url)
+            .then((supported) => {
+                if (supported) {
+                    Linking.openURL(url);
+                } else {
+                    Alert.alert('Error', 'WhatsApp is not installed on this device.');
+                }
+            })
+            .catch((err) => console.error('An error occurred', err));
     };
 
     const handleCallPress = (phone1, phone2) => {
@@ -102,7 +115,8 @@ const DeliveryReturn = ({ navigation }) => {
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
-        Linking.openURL(`tel:${phone}`);
+        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
+        Linking.openURL(`tel:${trimmedPhone}`);
         setCallAlertshow(false);
     };
 
@@ -114,7 +128,7 @@ const DeliveryReturn = ({ navigation }) => {
                 cancellable={true}
                 onRequestClose={handleStatusClose}
                 title="Are your sure?"
-                subtitle="Press YES to confirm this return as collected"
+                subtitle="Press YES to confirm this order as collected"
             >
                 <SCLAlertButton theme="success" onPress={() => setStatus(orderobject)}>YES</SCLAlertButton>
                 <SCLAlertButton theme="danger" onPress={handleStatusClose}>NO</SCLAlertButton>
@@ -232,7 +246,7 @@ const DeliveryReturn = ({ navigation }) => {
 
                                     <TouchableOpacity
                                         style={styles.whatsappButton}
-                                        onPress={() => handleWhatsAppPress(item?.ord_customer_phone)}
+                                        onPress={() => handleWhatsAppPress(item?.ord_customer_phone, item?.order_type)}
                                     >
                                         <Icon size={20} color="#fff" name="whatsapp" />
 
@@ -247,7 +261,7 @@ const DeliveryReturn = ({ navigation }) => {
                                         }
                                         }
                                     >
-                                        <Text style={styles.statusButtonText}>Collect</Text>
+                                        <Text style={styles.statusButtonText}>{item.order_type === 'return' ? 'Return' : 'Replace'}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -365,7 +379,7 @@ const styles = StyleSheet.create({
     },
     statusButtonText: {
         fontWeight: "600",
-        fontSize: 14,
+        fontSize: 16,
         color: '#fff',
         textAlign: "center",
         width: 100

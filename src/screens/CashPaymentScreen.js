@@ -11,6 +11,37 @@ const CashPaymentScreen = ({ route, navigation }) => {
     const { setSpinner } = useContext(AuthContext);
     const [amount, setAmount] = useState("");
     const [rvnumber, setRvnumber] = useState("");
+    const [rvnumberError, setRvnumberError] = useState("");
+    const [amountError, setAmountError] = useState("");
+
+
+
+    // validation input fields
+    const validateInputs = () => {
+        let isValid = true;
+
+        // Check if rvnumber is provided and has at least 4 digits
+        if (!rvnumber) {
+            setRvnumberError("RV number is required.");
+            isValid = false;
+        } else if (rvnumber?.length < 4) {
+            setRvnumberError("RV number must be at least 4 digits.");
+            isValid = false;
+        } else {
+            setRvnumberError("");
+        }
+
+        // Check if amount is provided
+        if (!amount) {
+            setAmountError("Amount is required.");
+            isValid = false;
+        } else {
+            setAmountError("");
+        }
+
+        return isValid;
+    };
+
 
     // Handle back button press
     useEffect(() => {
@@ -28,6 +59,12 @@ const CashPaymentScreen = ({ route, navigation }) => {
 
     const handleCashReceived = async () => {
         try {
+
+            // Validate inputs before proceeding
+            if (!validateInputs()) {
+                return;
+            }
+
             if (amount && rvnumber) {
                 setSpinner(true);
                 const token = await AsyncStorage.getItem("userSession");
@@ -43,7 +80,6 @@ const CashPaymentScreen = ({ route, navigation }) => {
                         },
                     }
                 );
-                console.log("response cash received", response);
                 if (response.data.success) {
                     alert("Order has been marked as paid successfully");
                     navigation.replace("orders"); // Navigate to the orders screen
@@ -86,6 +122,8 @@ const CashPaymentScreen = ({ route, navigation }) => {
                     style={styles.inputText}
                 />
 
+                {amountError ? <Text style={styles.errorText}>{amountError}</Text> : null}
+
                 <Text style={styles.label}>RV Number</Text>
                 <TextInput
                     onChangeText={setRvnumber}
@@ -95,7 +133,9 @@ const CashPaymentScreen = ({ route, navigation }) => {
                     style={styles.inputText}
                 />
 
-                <Button title="Proceed" onPress={handleCashReceived} color={Colors.Greens_Green} />
+                {rvnumberError ? <Text style={styles.errorText}>{rvnumberError}</Text> : null}
+
+                <Button title="Proceed" onPress={handleCashReceived} color={Colors.Greens_Green} style={styles.button} />
             </View>
         </ImageBackground>
     );
@@ -106,6 +146,11 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "100%",
         height: "100%",
+    },
+    button: {
+        padding: 10,
+        backgroundColor: Colors.Greens_Green,
+        borderRadius: 15,
     },
     overlay: {
         flex: 1,
@@ -127,7 +172,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     totalHighlight: {
-        color: Colors.Greens_Green,
+        color: Colors.Greens_White,
         fontWeight: "bold",
         fontSize: 24,
     },
@@ -144,6 +189,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: "white",
         backgroundColor: "rgba(255,255,255,0.1)",
+    },
+    errorText: {
+        color: "red",
+        fontSize: 14,
+        marginTop: 0,
+        marginBottom: 8,
+        fontWeight: "bold",
     },
 });
 
