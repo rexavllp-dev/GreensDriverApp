@@ -151,6 +151,11 @@ const SwipeItem = () => {
         <>
             <StatusBar barStyle="dark-content" />
             <SafeAreaView style={styles.container}>
+            {unverifiedorders.length === 0 ? (
+                    <View style={styles.noOrdersContainer}>
+                        <Text style={styles.noOrdersText}>No orders to verify</Text>
+                    </View>
+                ) : (
                 <FlatList
                     key={item => item.id}
                     data={unverifiedorders}
@@ -169,6 +174,8 @@ const SwipeItem = () => {
                     ItemSeparatorComponent={Separator}
                     contentContainerStyle={styles.listContainer}
                 />
+            )}
+
             </SafeAreaView>
         </>
     );
@@ -194,6 +201,17 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
+    },
+    noOrdersContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    noOrdersText: {
+        fontSize: 18,
+        color: '#666',
+        fontWeight: '500',
     },
     orderHeader: {
         flexDirection: 'row',

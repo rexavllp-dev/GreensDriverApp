@@ -140,16 +140,12 @@ const PendingScreen = ({ navigation }) => {
     }, [navigation]);
 
     const handleWhatsAppPress = (phone) => {
-        const message = `Hi, this is your delivery driver from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-        const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+        const message = `Hi, this is from Greens International. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+        // const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
 
-        Linking.canOpenURL(url).then((supported) => {
-            if (supported) {
-                Linking.openURL(url);
-            } else {
-                Alert.alert('Error', 'WhatsApp is not installed on this device.');
-            }
-        }).catch((err) => console.error('An error occurred', err));
+        Linking.openURL(url);
+
     };
 
 
@@ -159,13 +155,15 @@ const PendingScreen = ({ navigation }) => {
 
     const handleCallPress = (phone1, phone2) => {
         // Show the alert with both numbers
+        const trimmedPhone1 = phone1?.startsWith('0') ? phone1?.slice(1) : phone1;
+        const trimmedPhone2 = phone2?.startsWith('0') ? phone2?.slice(1) : phone2;
         setAlertshow(true);
-        setPhoneNumbers({ phone1, phone2 });
+        setPhoneNumbers({ phone1: '+971' + trimmedPhone1, phone2: trimmedPhone2 ? ('+971' + trimmedPhone2) : null });
     };
 
     const handleNumberSelect = (phone) => {
         // Check if the phone number starts with '0' and trim it
-        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
+        const trimmedPhone = phone;
         // Close the alert and call the selected phone number
         Linking.openURL(`tel:${trimmedPhone}`);
         setAlertshow(false);
@@ -386,7 +384,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     phoneNumberContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         marginBottom: 10,
         width: "100%",
 

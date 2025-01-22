@@ -11,18 +11,18 @@ const SplashScreen = () => {
             Animated.parallel([
                 Animated.timing(scaleAnim, {
                     toValue: 1.2, // Zoom in slightly
-                    duration: 700, // Duration in milliseconds
+                    duration: 400, // Duration in milliseconds
                     useNativeDriver: true,
                 }),
                 Animated.timing(opacityAnim, {
                     toValue: 1, // Fade in
-                    duration: 700, // Match the scale duration
+                    duration: 400, // Match the scale duration
                     useNativeDriver: true,
                 }),
             ]),
             Animated.timing(scaleAnim, {
                 toValue: 1, // Zoom out to normal size
-                duration: 300, // Smooth zoom-out duration
+                duration: 100, // Smooth zoom-out duration
                 useNativeDriver: true,
             }),
         ]).start();

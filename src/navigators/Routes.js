@@ -18,7 +18,7 @@ const Routes = () => {
         const timer = setTimeout(() => {
             setIsSplashVisible(false);
             checkLoggin(); // Perform the login check after the splash screen
-        }, 1200);
+        }, 700);
 
         return () => clearTimeout(timer); // Clean up the timer
     }, [checkLoggin]);

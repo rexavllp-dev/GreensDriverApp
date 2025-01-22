@@ -86,38 +86,30 @@ const DeliveryReturn = ({ navigation }) => {
 
         // Customize the message based on the order type
         if (orderType === 'return') {
-            message = `Hi, this is from Greens International.
-                        We will be collecting the return item(s) today. Please ensure they are ready for pickup.
-                        Thank you!`;
+            message = "Hi, this is from Greens International. We will be collecting the return item(s) today. Please ensure they are ready for pickup.Thank you!";
         } else if (orderType === 'replace') {
-            message = `Hi, this is from Greens International.
-                         We will be delivering the replacement item(s) today. Please ensure the return item(s) are ready for pickup.
-                        Thank you!`;
+            message = "Hi, this is from Greens International. We will be delivering the replacement item(s) today. Please ensure the return item(s) are ready for pickup. Thank you!";
         } 
 
-        // const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
-        const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+        const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
+        // const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
 
-        Linking.canOpenURL(url)
-            .then((supported) => {
-                if (supported) {
+      
                     Linking.openURL(url);
-                } else {
-                    Alert.alert('Error', 'WhatsApp is not installed on this device.');
-                }
-            })
-            .catch((err) => console.error('An error occurred', err));
+        
     };
 
     const handleCallPress = (phone1, phone2) => {
-        // Show the alert with both numbers
+       
+        const trimmedPhone1= phone1?.startsWith('0') ? phone1?.slice(1) : phone1;
+        const trimmedPhone2= phone2?.startsWith('0') ? phone2?.slice(1) : phone2;
         setCallAlertshow(true);
-        setPhoneNumbers({ phone1, phone2 });
+        setPhoneNumbers({ phone1: '+971' + trimmedPhone1, phone2: trimmedPhone2 ? ('+971' + trimmedPhone2) : null });
     };
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
-        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
+        const trimmedPhone = phone;
         Linking.openURL(`tel:${trimmedPhone}`);
         setCallAlertshow(false);
     };
@@ -402,7 +394,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     phoneNumberContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         marginBottom: 10,
         width: "100%",
 

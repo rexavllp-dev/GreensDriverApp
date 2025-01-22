@@ -122,14 +122,17 @@ const OnGoingScreen = ({ navigation }) => {
 
     const handleCallPress = (phone1, phone2) => {
         // Show the alert with both numbers
+        
+        const trimmedPhone1= phone1?.startsWith('0') ? phone1?.slice(1) : phone1;
+        const trimmedPhone2= phone2?.startsWith('0') ? phone2?.slice(1) : phone2;
         setCallAlertshow(true);
-        setPhoneNumbers({ phone1, phone2 });
+        setPhoneNumbers({ phone1: '+971' + trimmedPhone1, phone2: trimmedPhone2 ? ('+971' + trimmedPhone2) : null });
     };
 
     const handleNumberSelect = (phone) => {
         // Close the alert and call the selected phone number
         // Check if the phone number starts with '0' and trim it
-        const trimmedPhone = phone?.startsWith('0') ? phone?.slice(1) : phone;
+        const trimmedPhone =  phone;
         Linking.openURL(`tel:${trimmedPhone}`);
         setCallAlertshow(false);
     };
@@ -161,7 +164,7 @@ const OnGoingScreen = ({ navigation }) => {
                     {/* Display phone1 with label */}
                     <Text style={styles.phoneLabel}>Mobile Number:</Text>
                     <Text style={styles.phoneNumber} onPress={() => handleNumberSelect(phoneNumbers.phone1)}>
-                        {phoneNumbers?.phone1}
+                        {phoneNumbers?.phone1} 
                     </Text>
                 </View>
 
@@ -245,17 +248,18 @@ const OnGoingScreen = ({ navigation }) => {
                                     <TouchableOpacity
                                         style={[styles.iconButton, styles.whatsappButton]}
                                         onPress={() => {
-                                            const message = `Hi, this is ${user?.first_name?.replace(/"/g, '') || 'Driver'} from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
-                                            const phone = `+971${item.ord_customer_phone}`;
-                                            const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+                                            const message = `Hi, this is from Greens International delivery. Could you please share your location here? I am on the way with your delivery and will arrive soon.`;
+                                            const phone = item.ord_customer_phone;
+                                            // const url = `https://wa.me/+971${phone}?text=${encodeURIComponent(message)}`;
+                                            const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=+971${phone}`;
 
-                                            Linking.canOpenURL(url).then((supported) => {
-                                                if (supported) {
-                                                    Linking.openURL(url);
-                                                } else {
-                                                    Alert.alert('Error', 'WhatsApp is not installed on this device.');
-                                                }
-                                            }).catch((err) => console.error('An error occurred', err));
+                                            // Linking.canOpenURL(url).then((supported) => {
+                                            //     if (supported) {
+                                                   Linking.openURL(url);
+                                            //     } else {
+                                            //         Alert.alert('Error', 'WhatsApp is not installed on this device.');
+                                            //     }
+                                            // }).catch((err) => console.error('An error occurred', err));
                                         }}
                                     >
                                         <Icon name="whatsapp" size={24} color="white" />
@@ -479,7 +483,7 @@ const styles = StyleSheet.create({
     },
 
     phoneNumberContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         marginBottom: 10,
         width: "100%",
 
