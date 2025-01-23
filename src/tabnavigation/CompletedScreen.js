@@ -20,14 +20,14 @@ const CompletedScreen = ({ navigation }) => {
     const [completedOrders, setCompletedOrders] = useState([]);
     const { setSpinner, checkLoggin } = useContext(AuthContext);
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState();
+    const [date, setDate] = useState(new Date()?.toISOString()?.split('T')[0]);
 
     const getAllCompletedOrders = async () => {
         try {
             checkLoggin();
             setSpinner(true);
             const token = await AsyncStorage.getItem("userSession");
-            const response = await axios.get(`driver/get_delivered_orders`, {
+            const response = await axios.get(`driver/get_delivered_by_date?date=${date}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.data.success) {
@@ -53,7 +53,7 @@ const CompletedScreen = ({ navigation }) => {
     const onCancel = () => setOpen(false);
 
     const onConfirm = async (date) => {
-        setDate(date);
+        setDate(date.dateString);
         setOpen(false);
         setSpinner(true);
         try {
