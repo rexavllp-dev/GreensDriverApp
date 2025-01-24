@@ -175,6 +175,24 @@ const PendingScreen = ({ navigation }) => {
                 <View style={styles.orderIdContainer}>
                     <Text style={styles.orderIdText}>ORDER #{item.orderId}</Text>
                 </View>
+                <View>
+                    <TouchableOpacity
+                        style={styles.viewButton}
+                        onPress={() => navigation.navigate('orderdetails', { order: item })}
+                    >
+                        <Text style={styles.viewButtonText}>View Details</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <View style={styles.cardBody}>
+                    <Text style={styles.customerName}>{item.orderCustomerName}</Text>
+                    <Text style={styles.customerDetails}>Phone: {item.orderCustomerPhone}</Text>
+                    <Text style={styles.customerDetails}>
+                        No. of boxes: <Text style={styles.bold}>{item.no_boxes}</Text>
+                    </Text>
+                    <Text style={styles.price}>AED {item.ord_grand_total}</Text>
+                </View>
                 <View style={styles.paymentMethod}>
                     <Icon size={24} color="#333" name="cash" />
                     <Text style={styles.paymentText}>
@@ -183,14 +201,6 @@ const PendingScreen = ({ navigation }) => {
                             : "Card Payment"}
                     </Text>
                 </View>
-            </View>
-            <View style={styles.cardBody}>
-                <Text style={styles.customerName}>{item.orderCustomerName}</Text>
-                <Text style={styles.customerDetails}>Phone: {item.orderCustomerPhone}</Text>
-                <Text style={styles.customerDetails}>
-                    No. of boxes: <Text style={styles.bold}>{item.no_boxes}</Text>
-                </Text>
-                <Text style={styles.price}>AED {item.ord_grand_total}</Text>
             </View>
             <View style={styles.cardFooter}>
                 <TouchableOpacity
@@ -319,6 +329,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
         marginLeft: 12,
     },
@@ -350,6 +361,16 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "black",
         marginTop: 8,
+    },
+    viewButton: {
+        backgroundColor: '#327F40',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+    },
+    viewButtonText: {
+        color: 'white',
+        fontWeight: '600',
     },
     cardFooter: {
         flexDirection: "row",
